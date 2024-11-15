@@ -1,0 +1,1 @@
+# Pro-Analitycy-Danych-gr-1
