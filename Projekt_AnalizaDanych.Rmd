@@ -36,9 +36,9 @@ missmap(data)
 
 ```
 
+```{r analiza powiazan miedzy brakami danych, echo=FALSE}
+gg_miss_upset(data)
 
-
-
-
+```
 
 
