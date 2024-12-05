@@ -1,0 +1,44 @@
+---
+title: "Projekt_AnalizaDanych"
+author: "Adrianna Kluk"
+date: "2024-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```
+
+
+
+```{r miesieczna migawka ofert wynajmu}
+data <- apartments_rent_pl_2024_06
+
+colSums(is.na(data))
+n_miss(data)
+n_complete(data)
+
+#tabela podsumowująca liczby i proporcje wartosci NA
+miss_var_summary(data) 
+```
+
+```{r wykres_1, echo=FALSE}
+#wizualizacja brakow danych za pomocą naniar
+vis_miss(data)
+
+```
+
+```{r wykres_2, echo=FALSE}
+#tworzenie mapy brakow 
+
+library(Amelia)
+missmap(data)
+
+```
+
+
+
+
+
+
+
