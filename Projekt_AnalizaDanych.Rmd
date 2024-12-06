@@ -1,9 +1,18 @@
 ---
 title: "Projekt_AnalizaDanych"
-author: "Adrianna Kluk"
+author: "Adrianna Kluk, Sebastian Gebczyk"
 date: "2024-12-05"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
+
+```{r} 
+#instalacja potrzebnych pakietow/bibliotek
+
+library(naniar)
+library(Amelia)
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
@@ -12,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 
 ```{r miesieczna migawka ofert wynajmu}
-data <- apartments_rent_pl_2024_06
+data <- read.csv("apartments_rent_pl_2024_06.csv")
 
 colSums(is.na(data))
 n_miss(data)
