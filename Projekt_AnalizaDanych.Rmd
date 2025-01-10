@@ -1,44 +1,88 @@
 ---
 title: "Projekt_AnalizaDanych"
-author: "Adrianna Kluk"
+author: "Adrianna Kluk, Sebastian Gebczyk"
 date: "2024-12-05"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+#instalacja potrzebnych pakietow/bibliotek
+library(dplyr)
+library(ggplot2)
+library(VIM)
+library(naniar)
+library(Amelia)
+library(mice)
 ```
 
 
-
 ```{r miesieczna migawka ofert wynajmu}
-data <- apartments_rent_pl_2024_06
+data <- read.csv("apartments_rent_pl_2024_06.csv")
 
-colSums(is.na(data))
+data[data == ""] <- NA   #puste pola zamienione w NA
+
+
+na_counts <- colSums(is.na(data))
+na_counts_df <- as.data.frame(na_counts)
+print(na_counts_df)
+print("Powyzsza tabela przedstawia liczbe brakujacych danych w kazdej z badanych 28 zmiennych. Braki ukazane sa w ujeciu liczbowym. Zdecydowanie najwiecej brakow wystepuje w kolumnie zmiennej o nazwie condition, bo az 6329. Duza liczba brakow wyrozniaja sie takze zmienne: buildingMaterial (3505), buildYear (2249), type(1830) oraz floor(1053). Pozostale zmienne cechuja sie juz znacznie mniejsza liczba brakujacych danych. Pietnascie sposrod badanych zmiennych zawiera kompletne dane.")
+
+
 n_miss(data)
+print("Laczna liczba brakow w calym analizowym zbiorze danych wynosi 15762.")
 n_complete(data)
+print("Natomiast calkowita liczba kompletnych wartosci wynosi 232010. Zatem znaczna wiekszosc wartosci jest nam znana.")
+
 
 #tabela podsumowująca liczby i proporcje wartosci NA
 miss_var_summary(data) 
+print("Powyzsza tabela ukazuje nie tylko wartosci liczbowe brakujacych danych w kazdej zmiennej, ale takze ich proporcje do lacznej sumy obserwacji. Poczawszy od wartosci posiadajac najmniej kompletnych danych.")
+
+table(sapply(data, class))
+print("Najwiecej badanych zmiennych wystepuje w postaci liczb zmiennoprzecinkowych, jest ich 16, kolumn zmiennych w postaci tekstowej jest 10, a zmienna w postaci liczby calkowitej wystepuje tylko raz.")
 ```
 
 ```{r wykres_1, echo=FALSE}
 #wizualizacja brakow danych za pomocą naniar
-vis_miss(data)
+vis_miss(data) +
+  ggtitle("Wizualizacja brakow danych w calym zbiorze")
+
+gg_miss_var(data) +
+  ggtitle("Wizualizacja brakow danych w poszczegolnych kolumnach")
 
 ```
 
 ```{r wykres_2, echo=FALSE}
 #tworzenie mapy brakow 
 
-library(Amelia)
-missmap(data)
+missmap(data, main="Mapa brakow danych")
 
 ```
 
-```{r analiza powiazan miedzy brakami danych, echo=FALSE}
-gg_miss_upset(data)
+``` {r}
+#Klasyfikacja braków  
 
+
+#MCAR
+mcar_test(data)
+
+#MAR
+md.pattern(data)
+
+#MNAR
+aggr_plot <- aggr(data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
 ```
+
+
+``` {r}
+#Analiza wzorcow brakow
+
+md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
+
+#Outliers w pozniejszym etapie tez o nich nie zapomniec
+```
+
+
 
 
