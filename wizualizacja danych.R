@@ -46,6 +46,12 @@ ggplot() +
     theme_minimal()
   
 
-
+# wykres 3 - rozkład roku wybudowania mieszkań 
+  
+  ggplot(Imputed_Data_Combined, aes(x = buildYear)) +
+    geom_histogram(binwidth = 5, fill = "violetred3", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład roku wybudowania mieszkań",
+         x = "Rok wybudowania", y = "Liczba mieszkań") +
+    theme_minimal()
   
 
