@@ -1,3 +1,5 @@
+# wykres 1 - średnie ceny wynajmu w Polsce na mapie 
+
 table (Imputed_Data_Combined$city)
 
 # srednie ceny miesięcznego czynszu
@@ -35,4 +37,15 @@ ggplot() +
   labs(title = "Średnie ceny wynajmu w Polsce", size = "Cena [PLN]") +
   theme_minimal()
 
+# wykres 2 - Cena wynajmu w zależności od wielkości mieszkania 
+
+  ggplot(Imputed_Data_Combined, aes(x = squareMeters, y = price)) +
+    geom_point(alpha = 0.7, size = 3, color = "maroon4") +  
+    labs(title = "Cena wynajmu w zależności od wielkości mieszkania",
+         x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+  
+
+
+  
 
