@@ -1,3 +1,5 @@
+#MAPA
+
 # wykres 1 - średnie ceny wynajmu w Polsce na mapie 
 
 table (Imputed_Data_Combined$city)
@@ -37,15 +39,20 @@ ggplot() +
   labs(title = "Średnie ceny wynajmu w Polsce", size = "Cena [PLN]") +
   theme_minimal()
 
-# wykres 2 - Cena wynajmu w zależności od wielkości mieszkania 
 
-  ggplot(Imputed_Data_Combined, aes(x = squareMeters, y = price)) +
-    geom_point(alpha = 0.7, size = 3, color = "maroon4") +  
-    labs(title = "Cena wynajmu w zależności od wielkości mieszkania",
-         x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
-    theme_minimal()
   
 
+#ROZKŁADY
+  
+# wykres 7 - rozkład cen mieszkań 
+  
+  ggplot(Imputed_Data_Combined, aes(x = price)) +
+    geom_histogram(binwidth = 500, fill = "violetred3", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład cen mieszkań",
+         x = "Cena (PLN)", y = "Liczba mieszkań") +
+    theme_minimal()
+  
+  
 # wykres 3 - rozkład roku wybudowania mieszkań 
   
   ggplot(Imputed_Data_Combined, aes(x = buildYear)) +
@@ -62,6 +69,17 @@ ggplot() +
     labs(title = "Rozkład metrażu mieszkań",
          x = "metraż", y = "Liczba mieszkań") +
     theme_minimal()
+  
+  
+#wykres 9 - rozkład liczby pokoi
+  
+  ggplot(Imputed_Data_Combined, aes(x = rooms)) +
+    geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład liczby pokoi",
+         x = "Liczba pokoi", y = "Liczba mieszkań") +
+    theme_minimal()
+  
+#WYKRESY KOŁOWE  
   
 # wykres 5 -  procentowy udział mieszkań w zależności od typów budynków 
   
@@ -87,25 +105,10 @@ ggplot() +
     )
 
   
-# wykres 6 - Rozkład cen w zależności od typu mieszkania 
+
+#ZALEŻNOŚCI Z PODZIAŁEM NA MIASTA 
   
-  ggplot(Imputed_Data_Combined, aes(x = type, y = price)) +
-    geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
-    labs(title = "Ceny mieszkań w zależności od typu budynku",
-         x = "Typ mieszkania", y = "Cena (PLN)") +
-    theme_minimal()
-  
-  
-  # wykres 7 - rozkład cen mieszkań 
-  
-  ggplot(Imputed_Data_Combined, aes(x = price)) +
-    geom_histogram(binwidth = 500, fill = "violetred3", color = "black", alpha = 0.7) +
-    labs(title = "Rozkład cen mieszkań",
-         x = "Cena (PLN)", y = "Liczba mieszkań") +
-    theme_minimal()
-  
-  
-  #wykres 8 - średnie ceny wynajmu mieszkań w miastach Polski (wykres słupkowy)
+#wykres 8 - średnie ceny wynajmu mieszkań w miastach Polski (wykres słupkowy)
   
   ggplot(srednie_ceny, aes(x = reorder(city, srednie_ceny), y = srednie_ceny, fill = city)) +
     geom_bar(stat = "identity", fill = "mediumorchid4",  alpha = 0.7,) +
@@ -123,16 +126,7 @@ ggplot() +
     )
   
   
-  #wykres 9 - rozkład liczby pokoi
-  
-  ggplot(Imputed_Data_Combined, aes(x = rooms)) +
-    geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
-    labs(title = "Rozkład liczby pokoi",
-         x = "Liczba pokoi", y = "Liczba mieszkań") +
-    theme_minimal()
-  
-  
-  # wykres 10 - liczba mieszkań z ochroną i bez ochrony w różnych miastach 
+# wykres 10 - liczba mieszkań z ochroną i bez ochrony w różnych miastach 
 
   liczba_mieszkan_z_ochrona <- Imputed_Data_Combined %>%
     group_by(city, hasSecurity) %>%
@@ -151,7 +145,7 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5)
     )
   
-  # wykres 11 - liczba mieszkań z windą i bez windy w różnych miastach 
+# wykres 11 - liczba mieszkań z windą i bez windy w różnych miastach 
   
   liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
     group_by(city, hasElevator) %>%
@@ -170,8 +164,18 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5)
     )
 
+#ZALEŻNOŚCI CENY OD ZMIENNYCH JAKOŚCIOWYCH
   
-  # wykres 12 - Cena mieszkań w zależności od obecności balkonu
+# wykres 6 - Rozkład cen w zależności od typu mieszkania 
+  
+  ggplot(Imputed_Data_Combined, aes(x = type, y = price)) +
+    geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
+    labs(title = "Ceny mieszkań w zależności od typu budynku",
+         x = "Typ mieszkania", y = "Cena (PLN)") +
+    theme_minimal()
+  
+  
+# wykres 12 - Cena mieszkań w zależności od obecności balkonu
   
   ggplot(Imputed_Data_Combined, aes(x = hasBalcony, y = price)) +
     geom_jitter(width = 0.2, alpha = 0.6, color = "orchid4") +
@@ -182,8 +186,10 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5),
       axis.text.x = element_text(angle = 0, hjust = 0.5)
     )
+
+#ZALEŻNOŚCI CENY OD ZMIENNYCH ILOŚCIOWYCH
   
-  # wykres 13 - cena mieszkania w zależności od roku wybudowania 
+# wykres 13 - cena mieszkania w zależności od roku wybudowania 
   
   ggplot(Imputed_Data_Combined, aes(x = buildYear, y = price)) +
     geom_point(alpha = 0.7, size = 3, color = "hotpink4") +  
@@ -191,5 +197,13 @@ ggplot() +
          x = "Rok wybudowania", y = "Cena wynajmu [PLN]") +
     theme_minimal()
   
+  
+# wykres 2 - Cena wynajmu w zależności od wielkości mieszkania 
+  
+  ggplot(Imputed_Data_Combined, aes(x = squareMeters, y = price)) +
+    geom_point(alpha = 0.7, size = 3, color = "maroon4") +  
+    labs(title = "Cena wynajmu w zależności od wielkości mieszkania",
+         x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
+    theme_minimal()
   
   
