@@ -54,4 +54,14 @@ ggplot() +
          x = "Rok wybudowania", y = "Liczba mieszkań") +
     theme_minimal()
   
+  
+# wykres 4 - rozkład metrażu mieszkań 
+  
+  ggplot(Imputed_Data_Combined, aes(x = squareMeters)) +
+    geom_histogram(binwidth = 5, fill = "orchid4", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład metrażu mieszkań",
+         x = "metraż", y = "Liczba mieszkań") +
+    theme_minimal()
+  
+
 
