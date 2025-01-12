@@ -63,5 +63,26 @@ ggplot() +
          x = "metraż", y = "Liczba mieszkań") +
     theme_minimal()
   
-
-
+# wykres 5 - typy budynków 
+  
+  ggplot(Imputed_Data_Combined, aes(x = type)) +
+    geom_bar(fill = "pink3", color = "black", alpha = 0.7) +
+    labs(title = "Liczba mieszkań w zależności od typu budynku",
+         x = "Typy budynków", y = "Liczba mieszkań") +
+    theme_minimal()
+  
+# wykres 6 - Rozkład cen w zależności od typu mieszkania 
+  
+  ggplot(Imputed_Data_Combined, aes(x = type, y = price)) +
+    geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
+    labs(title = "Rozkład cen mieszkań w zależności od typu budynku",
+         x = "Typ mieszkania", y = "Cena (PLN)") +
+    theme_minimal()
+  
+  
+  
+  
+  
+  
+  
+  
