@@ -107,9 +107,63 @@ ggplot() +
     )
   
   
+  #wykres 9 - rozkład liczby pokoi
+  
+  ggplot(Imputed_Data_Combined, aes(x = rooms)) +
+    geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład liczby pokoi",
+         x = "Liczba pokoi", y = "Liczba mieszkań") +
+    theme_minimal()
   
   
+  # wykres 10 - liczba mieszkań z ochroną i bez ochrony w różnych miastach 
+
+  liczba_mieszkan_z_ochrona <- Imputed_Data_Combined %>%
+    group_by(city, hasSecurity) %>%
+    summarise(count = n())
   
+  ggplot(liczba_mieszkan_z_ochrona, aes(x = reorder(city, count), y = count, fill = hasSecurity)) +
+    geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +  
+    labs(title = "Liczba mieszkań z ochroną i bez ochrony w różnych miastach",
+         x = "Miasto", y = "Liczba mieszkań") +
+    scale_fill_manual(values = c("peachpuff", "lightpink1")) +  
+    coord_flip() + 
+    theme_minimal() +
+    theme(
+      legend.position = "top",  
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(size = 14, hjust = 0.5)
+    )
   
+  # wykres 11 - liczba mieszkań z windą i bez windy w różnych miastach 
   
+  liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
+    group_by(city, hasElevator) %>%
+    summarise(count = n())
+  
+  ggplot(liczba_mieszkan_z_winda, aes(x = reorder(city, count), y = count, fill = hasElevator)) +
+    geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +  
+    labs(title = "Liczba mieszkań z windą i bez windy w różnych miastach",
+         x = "Miasto", y = "Liczba mieszkań") +
+    scale_fill_manual(values = c("thistle", "deeppink4")) +  
+    coord_flip() + 
+    theme_minimal() +
+    theme(
+      legend.position = "top",  
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(size = 14, hjust = 0.5)
+    )
+
+  
+  # wykres 12 - Cena mieszkań w zależności od obecności balkonu
+  
+  ggplot(Imputed_Data_Combined, aes(x = hasBalcony, y = price)) +
+    geom_jitter(width = 0.2, alpha = 0.6, color = "steelblue") +
+    labs(title = "Cena mieszkań w zależności od obecności balkonu",
+         x = "Obecność balkonu", y = "Cena wynajmu (PLN)") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, hjust = 0.5),
+      axis.text.x = element_text(angle = 0, hjust = 0.5)
+    )
   
