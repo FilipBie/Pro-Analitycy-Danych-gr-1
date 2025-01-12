@@ -174,7 +174,7 @@ ggplot() +
   # wykres 12 - Cena mieszkań w zależności od obecności balkonu
   
   ggplot(Imputed_Data_Combined, aes(x = hasBalcony, y = price)) +
-    geom_jitter(width = 0.2, alpha = 0.6, color = "steelblue") +
+    geom_jitter(width = 0.2, alpha = 0.6, color = "orchid4") +
     labs(title = "Cena mieszkań w zależności od obecności balkonu",
          x = "Obecność balkonu", y = "Cena wynajmu (PLN)") +
     theme_minimal() +
@@ -182,4 +182,14 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5),
       axis.text.x = element_text(angle = 0, hjust = 0.5)
     )
+  
+  # wykres 13 - cena mieszkania w zależności od roku wybudowania 
+  
+  ggplot(Imputed_Data_Combined, aes(x = buildYear, y = price)) +
+    geom_point(alpha = 0.7, size = 3, color = "hotpink4") +  
+    labs(title = "Cena wynajmu w zależności od roku wybudowania",
+         x = "Rok wybudowania", y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+  
+  
   
