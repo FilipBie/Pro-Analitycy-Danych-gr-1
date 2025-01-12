@@ -75,9 +75,36 @@ ggplot() +
   
   ggplot(Imputed_Data_Combined, aes(x = type, y = price)) +
     geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
-    labs(title = "Rozkład cen mieszkań w zależności od typu budynku",
+    labs(title = "Ceny mieszkań w zależności od typu budynku",
          x = "Typ mieszkania", y = "Cena (PLN)") +
     theme_minimal()
+  
+  
+  # wykres 7 - rozkład cen mieszkań 
+  
+  ggplot(Imputed_Data_Combined, aes(x = price)) +
+    geom_histogram(binwidth = 500, fill = "violetred3", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład cen mieszkań",
+         x = "Cena (PLN)", y = "Liczba mieszkań") +
+    theme_minimal()
+  
+  
+  #wykres 8 - średnie ceny wynajmu mieszkań w miastach Polski (wykres słupkowy)
+  
+  ggplot(srednie_ceny, aes(x = reorder(city, srednie_ceny), y = srednie_ceny, fill = city)) +
+    geom_bar(stat = "identity", fill = "mediumorchid4",  alpha = 0.7,) +
+    geom_text(aes(label = round(srednie_ceny, 0)),  
+              vjust = -0.3, size = 3.5) +
+    labs(title = "Średnie ceny wynajmu mieszkań w miastach Polski",
+         x = "Miasta", y = "Średnia cena wynajmu (PLN)") +
+    coord_flip() +  
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.title = element_text(size = 12),
+      plot.title = element_text(size = 14, hjust = 0.5)
+    )
   
   
   
