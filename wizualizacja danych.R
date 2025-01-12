@@ -63,13 +63,29 @@ ggplot() +
          x = "metraż", y = "Liczba mieszkań") +
     theme_minimal()
   
-# wykres 5 - typy budynków 
+# wykres 5 -  procentowy udział mieszkań w zależności od typów budynków 
   
-  ggplot(Imputed_Data_Combined, aes(x = type)) +
-    geom_bar(fill = "pink3", color = "black", alpha = 0.7) +
-    labs(title = "Liczba mieszkań w zależności od typu budynku",
-         x = "Typy budynków", y = "Liczba mieszkań") +
-    theme_minimal()
+  procentowy_udzial <- Imputed_Data_Combined %>%
+    group_by(type) %>%
+    summarise(count = n()) %>%
+    mutate(percent = round((count / sum(count)) * 100, 1))  
+  
+  ggplot(procentowy_udzial, aes(x = "", y = percent, fill = type)) +
+    geom_bar(stat = "identity", width = 1, color = "black") +
+    coord_polar("y", start = 0) +
+    geom_text(aes(label = paste0(percent, "%")), position = position_stack(vjust = 0.5), size = 4) +
+    labs(title = "Procentowy udział mieszkań w zależności od typów budynków",
+         x = NULL, y = NULL) +
+    scale_fill_manual(values = c(
+      "apartmentBuilding" = "mistyrose3",
+      "blockOfFlats" = "plum3",
+      "tenement" = "hotpink3")) +
+    theme_void() +
+    theme(
+      plot.title = element_text(size = 14, hjust = 0.5),
+      legend.position = "top"
+    )
+
   
 # wykres 6 - Rozkład cen w zależności od typu mieszkania 
   
