@@ -275,6 +275,16 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5),
       axis.text.x = element_text(angle = 0, hjust = 0.5)
     )
+  
+  
+  # wykres 2 - Cena wynajmu w zależności od wielkości mieszkania
+  
+  ggplot(Imputed_Data_Combined, aes(x = squareMeters, y = price)) +
+    geom_point(alpha = 0.7, size = 3, color = "maroon4") +  
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Dodana regresja
+    labs(title = "Cena wynajmu w zależności od wielkości mieszkania",
+         x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
+    theme_minimal()
 
 #ZALEŻNOŚCI CENY OD ZMIENNYCH ILOŚCIOWYCH
   
@@ -282,26 +292,23 @@ ggplot() +
   
   ggplot(Imputed_Data_Combined, aes(x = buildYear, y = price)) +
     geom_point(alpha = 0.7, size = 3, color = "hotpink4") +  
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Dodana regresja
     labs(title = "Cena wynajmu w zależności od roku wybudowania",
          x = "Rok wybudowania", y = "Cena wynajmu [PLN]") +
     theme_minimal()
   
-  
-# wykres 2 - Cena wynajmu w zależności od wielkości mieszkania 
-  
-  ggplot(Imputed_Data_Combined, aes(x = squareMeters, y = price)) +
-    geom_point(alpha = 0.7, size = 3, color = "maroon4") +  
-    labs(title = "Cena wynajmu w zależności od wielkości mieszkania",
-         x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
-    theme_minimal()
 
   
   # wykres 25 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
-  ggplot(Imputed_Data_Combined, aes(x = as.factor(rooms), y = price)) +
+  ggplot(Imputed_Data_Combined, aes(x = as.numeric(rooms), y = price)) +  # Konwersja rooms na liczby
     geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Dodana regresja
     labs(title = "Cena mieszkań w zależności od liczby pokoi",
          x = "Liczba pokoi", y = "Cena wynajmu [PLN]") +
     theme_minimal()
+  
+  
+
   
   
 #ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
