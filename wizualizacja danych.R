@@ -42,7 +42,7 @@ ggplot() +
 
   
 
-#ROZKŁADY
+#1. ROZKŁADY
   
 # wykres 7 - rozkład cen mieszkań 
   
