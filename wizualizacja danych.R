@@ -17,7 +17,7 @@ library(maps)
 library(mapdata)
 library(ggplot2)
 
-# mapa polski 
+# mapa polski
 poland_map <- map_data("worldHires", region = "Poland")
 
 # dane
@@ -103,6 +103,73 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5),
       legend.position = "top"
     )
+  
+# wykres 12 - Podsumowanie liczby mieszkań z balkonem i bez balkonu
+  
+  procentowy_udzial <- Imputed_Data_Combined %>%
+    group_by(hasBalcony) %>%
+    summarise(count = n()) %>%
+    mutate(percent = round((count / sum(count)) * 100, 1))
+  
+  procentowy_udzial$hasBalcony <- ifelse(procentowy_udzial$hasBalcony == "yes", "Z balkonem", "Bez balkonu")
+
+  ggplot(procentowy_udzial, aes(x = "", y = percent, fill = hasBalcony)) +
+    geom_bar(stat = "identity", width = 1, color = "black") +
+    coord_polar("y", start = 0) +
+    geom_text(aes(label = paste0(percent, "%")), position = position_stack(vjust = 0.5), size = 4) +
+    labs(title = "Procentowy udział mieszkań z balkonem vs. bez",
+         fill = NULL) +
+    scale_fill_manual(values = c("Z balkonem" = "plum3", "Bez balkonu" = "hotpink3")) +
+    theme_void() +
+    theme(
+      plot.title = element_text(size = 14, hjust = 0.5),
+      legend.position = "top"
+    )
+  
+  # wykres 14 - Podsumowanie liczby mieszkań z parkingiem i bez
+
+  procentowy_udzial <- Imputed_Data_Combined %>%
+    group_by(hasParkingSpace) %>%
+    summarise(count = n()) %>%
+    mutate(percent = round((count / sum(count)) * 100, 1))
+  
+  procentowy_udzial$hasParkingSpace <- ifelse(procentowy_udzial$hasParkingSpace == "yes", "Z parkingiem", "Bez parkingu")
+  
+  ggplot(procentowy_udzial, aes(x = "", y = percent, fill = hasParkingSpace)) +
+    geom_bar(stat = "identity", width = 1, color = "black") +
+    coord_polar("y", start = 0) +
+    geom_text(aes(label = paste0(percent, "%")), position = position_stack(vjust = 0.5), size = 4) +
+    labs(title = "Procentowy udział mieszkań z parkingiem vs. bez",
+         fill = NULL) +
+    scale_fill_manual(values = c("Z parkingiem" = "plum3", "Bez parkingu" = "hotpink3")) +
+    theme_void() +
+    theme(
+      plot.title = element_text(size = 14, hjust = 0.5),
+      legend.position = "top"
+    )
+  
+# wykres 15 - Podsumowanie liczby mieszkań z ochroną i bez
+
+  procentowy_udzial <- Imputed_Data_Combined %>%
+    group_by(hasSecurity) %>%
+    summarise(count = n()) %>%
+    mutate(percent = round((count / sum(count)) * 100, 1))
+  
+  procentowy_udzial$hasSecurity <- ifelse(procentowy_udzial$hasSecurity == "yes", "Z ochroną", "Bez ochrony")
+
+  ggplot(procentowy_udzial, aes(x = "", y = percent, fill = hasSecurity)) +
+    geom_bar(stat = "identity", width = 1, color = "black") +
+    coord_polar("y", start = 0) +
+    geom_text(aes(label = paste0(percent, "%")), position = position_stack(vjust = 0.5), size = 4) +
+    labs(title = "Procentowy udział mieszkań z ochroną vs. bez",
+         fill = NULL) +
+    scale_fill_manual(values = c("Z ochroną" = "plum3", "Bez ochrony" = "hotpink3")) +
+    theme_void() +
+    theme(
+      plot.title = element_text(size = 14, hjust = 0.5),
+      legend.position = "top"
+    )
+  
 
   
 
@@ -205,5 +272,59 @@ ggplot() +
     labs(title = "Cena wynajmu w zależności od wielkości mieszkania",
          x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
     theme_minimal()
+
+  
+  
+#ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
+  
+
+  
+# Wykres rozrzutu z linią regresji
+  ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Odległość do szkoły vs. Cena wynajmu",
+         x = "Odległość do szkoły [km]",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+
+  
+  # Wykres rozrzutu z linią regresji
+  ggplot(Imputed_Data_Combined, aes(x = clinicDistance, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Odległość do kliniki vs. Cena wynajmu",
+         x = "Odległość do kliniki [km]",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+
+  
+  # Wykres rozrzutu z linią regresji
+  ggplot(Imputed_Data_Combined, aes(x = collegeDistance, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Odległość do uczelni vs. Cena wynajmu",
+         x = "Odległość do uczelni [km]",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+
+  # Wykres rozrzutu z linią regresji
+  ggplot(Imputed_Data_Combined, aes(x = poiCount, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Liczba punktów POI vs. Cena wynajmu",
+         x = "Liczba punktów POI",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+  
+  
+
+  
+  
+  
+
+  
+
+  
   
   
