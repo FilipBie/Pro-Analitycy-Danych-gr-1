@@ -369,10 +369,10 @@ ggplot() +
   
   
   # wykres 21 - Wpływ obecności windy na ceny mieszkań (boxplot)
-  Imputed_Data_Combined$hasElevator <- ifelse(Imputed_Data_Combined$hasElevator == "yes", "Z windą", "Bez windy")
+  df_winda <- Imputed_Data_Combined %>%
+    mutate(hasElevator = ifelse(hasElevator == "yes", "Z windą", "Bez windy"))
   
-
-  ggplot(Imputed_Data_Combined, aes(x = hasElevator, y = price, fill = hasElevator)) +
+  ggplot(df_winda, aes(x = hasElevator, y = price, fill = hasElevator)) +
     geom_boxplot(alpha = 0.7) +
     labs(title = "Wpływ obecności windy na ceny mieszkań",
          x = "Obecność windy",
@@ -382,10 +382,12 @@ ggplot() +
     theme(legend.position = "none")
   
   
-  # wykres 22 - Wpływ obecności ochrony na ceny mieszkań (boxplot)
-  Imputed_Data_Combined$hasSecurity <- ifelse(Imputed_Data_Combined$hasSecurity == "yes", "Z ochroną", "Bez ochrony")
   
-  ggplot(Imputed_Data_Combined, aes(x = hasSecurity, y = price, fill = hasSecurity)) +
+  # wykres 22 - Wpływ obecności ochrony na ceny mieszkań (boxplot)
+  df_ochrona <- Imputed_Data_Combined %>%
+    mutate(hasSecurity = ifelse(hasSecurity == "yes", "Z ochroną", "Bez ochrony"))
+  
+  ggplot(df_ochrona, aes(x = hasSecurity, y = price, fill = hasSecurity)) +
     geom_boxplot(alpha = 0.7) +
     labs(title = "Wpływ obecności ochrony na ceny mieszkań",
          x = "Obecność ochrony",
@@ -393,12 +395,13 @@ ggplot() +
     scale_fill_manual(values = c("Z ochroną" = "plum3", "Bez ochrony" = "hotpink3")) +
     theme_minimal() +
     theme(legend.position = "none")
- 
+  
   
   # wykres 23 - Wpływ obecności parkingu na ceny mieszkań (boxplot)
-  Imputed_Data_Combined$hasParkingSpace <- ifelse(Imputed_Data_Combined$hasParkingSpace == "yes", "Z parkingiem", "Bez parkingu")
-
-  ggplot(Imputed_Data_Combined, aes(x = hasParkingSpace, y = price, fill = hasParkingSpace)) +
+  df_parking <- Imputed_Data_Combined %>%
+    mutate(hasParkingSpace = ifelse(hasParkingSpace == "yes", "Z parkingiem", "Bez parkingu"))
+  
+  ggplot(df_parking, aes(x = hasParkingSpace, y = price, fill = hasParkingSpace)) +
     geom_boxplot(alpha = 0.7) +
     labs(title = "Wpływ obecności parkingu na ceny mieszkań",
          x = "Obecność parkingu",
