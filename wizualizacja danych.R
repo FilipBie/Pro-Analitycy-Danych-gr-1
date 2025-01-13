@@ -318,7 +318,50 @@ ggplot() +
     theme_minimal()
   
   
+  #WYKRESY PUDEŁKOWE
+  
+  
+  # Wykres boxplot
+  Imputed_Data_Combined$hasElevator <- ifelse(Imputed_Data_Combined$hasElevator == "yes", "Z windą", "Bez windy")
+  
 
+  ggplot(Imputed_Data_Combined, aes(x = hasElevator, y = price, fill = hasElevator)) +
+    geom_boxplot(alpha = 0.7) +
+    labs(title = "Wpływ obecności windy na ceny mieszkań",
+         x = "Obecność windy",
+         y = "Cena wynajmu [PLN]") +
+    scale_fill_manual(values = c("Z windą" = "plum3", "Bez windy" = "hotpink3")) +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  
+  # Wykres boxplot
+  Imputed_Data_Combined$hasSecurity <- ifelse(Imputed_Data_Combined$hasSecurity == "yes", "Z ochroną", "Bez ochrony")
+  
+  ggplot(Imputed_Data_Combined, aes(x = hasSecurity, y = price, fill = hasSecurity)) +
+    geom_boxplot(alpha = 0.7) +
+    labs(title = "Wpływ obecności ochrony na ceny mieszkań",
+         x = "Obecność ochrony",
+         y = "Cena wynajmu [PLN]") +
+    scale_fill_manual(values = c("Z ochroną" = "plum3", "Bez ochrony" = "hotpink3")) +
+    theme_minimal() +
+    theme(legend.position = "none")
+ 
+  
+   # Wykres boxplot
+  Imputed_Data_Combined$hasParkingSpace <- ifelse(Imputed_Data_Combined$hasParkingSpace == "yes", "Z parkingiem", "Bez parkingu")
+
+  ggplot(Imputed_Data_Combined, aes(x = hasParkingSpace, y = price, fill = hasParkingSpace)) +
+    geom_boxplot(alpha = 0.7) +
+    labs(title = "Wpływ obecności parkingu na ceny mieszkań",
+         x = "Obecność parkingu",
+         y = "Cena wynajmu [PLN]") +
+    scale_fill_manual(values = c("Z parkingiem" = "plum3", "Bez parkingu" = "hotpink3")) +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  
+  
   
   
   
