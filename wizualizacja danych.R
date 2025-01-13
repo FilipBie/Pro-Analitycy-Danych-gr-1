@@ -192,6 +192,27 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5)
     )
   
+  # wykres 27 - Liczba mieszkań w poszczególnych miastach (wykres słupkowy)
+  liczba_mieszkan <- Imputed_Data_Combined %>%
+    group_by(city) %>%
+    summarise(count = n())
+  
+  
+  ggplot(liczba_mieszkan, aes(x = reorder(city, count), y = count, fill = city)) +
+    geom_bar(stat = "identity", fill = "mediumorchid4", alpha = 0.7) +
+    geom_text(aes(label = count),  
+              vjust = -0.3, size = 3.5) +
+    labs(title = "Liczba mieszkań w poszczególnych miastach",
+         x = "Miasta", y = "Liczba mieszkań") +
+    coord_flip() +  
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.title = element_text(size = 12),
+      plot.title = element_text(size = 14, hjust = 0.5)
+    )
+  
   
 # wykres 10 - liczba mieszkań z ochroną i bez ochrony w różnych miastach 
 
@@ -232,6 +253,7 @@ ggplot() +
     )
 
 #ZALEŻNOŚCI CENY OD ZMIENNYCH JAKOŚCIOWYCH
+  
   
 # wykres 6 - Rozkład cen w zależności od typu mieszkania 
   
@@ -274,12 +296,30 @@ ggplot() +
     theme_minimal()
 
   
+  # wykres 25 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
+  ggplot(Imputed_Data_Combined, aes(x = as.factor(rooms), y = price)) +
+    geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
+    labs(title = "Cena mieszkań w zależności od liczby pokoi",
+         x = "Liczba pokoi", y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+  
   
 #ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
   
 
+
   
-# Wykres rozrzutu z linią regresji
+  # wykres 24 - Cena wynajmu vs. Odległość od centrum (scatter plot + regresja)
+  ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Cena wynajmu vs. Odległość od centrum",
+         x = "Odległość od centrum [km]",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+  
+  
+  # wykres 17 - Wpływ odległości do szkół na cenę mieszkań (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -289,7 +329,7 @@ ggplot() +
     theme_minimal()
 
   
-  # Wykres rozrzutu z linią regresji
+  # wykres 18 - Wpływ odległości do klinik na cenę mieszkań (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = clinicDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -299,7 +339,7 @@ ggplot() +
     theme_minimal()
 
   
-  # Wykres rozrzutu z linią regresji
+  # wykres 19 - Wpływ odległości do uczelni na cenę mieszkań (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = collegeDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -308,7 +348,7 @@ ggplot() +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 
-  # Wykres rozrzutu z linią regresji
+  # wykres 25 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
   ggplot(Imputed_Data_Combined, aes(x = poiCount, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -321,7 +361,7 @@ ggplot() +
   #WYKRESY PUDEŁKOWE
   
   
-  # Wykres boxplot
+  # wykres 21 - Wpływ obecności windy na ceny mieszkań (boxplot)
   Imputed_Data_Combined$hasElevator <- ifelse(Imputed_Data_Combined$hasElevator == "yes", "Z windą", "Bez windy")
   
 
@@ -335,7 +375,7 @@ ggplot() +
     theme(legend.position = "none")
   
   
-  # Wykres boxplot
+  # wykres 22 - Wpływ obecności ochrony na ceny mieszkań (boxplot)
   Imputed_Data_Combined$hasSecurity <- ifelse(Imputed_Data_Combined$hasSecurity == "yes", "Z ochroną", "Bez ochrony")
   
   ggplot(Imputed_Data_Combined, aes(x = hasSecurity, y = price, fill = hasSecurity)) +
@@ -348,7 +388,7 @@ ggplot() +
     theme(legend.position = "none")
  
   
-   # Wykres boxplot
+  # wykres 23 - Wpływ obecności parkingu na ceny mieszkań (boxplot)
   Imputed_Data_Combined$hasParkingSpace <- ifelse(Imputed_Data_Combined$hasParkingSpace == "yes", "Z parkingiem", "Bez parkingu")
 
   ggplot(Imputed_Data_Combined, aes(x = hasParkingSpace, y = price, fill = hasParkingSpace)) +
@@ -361,11 +401,18 @@ ggplot() +
     theme(legend.position = "none")
   
   
+
+  
+
+  
   
   
   
   
 
+  
+
+  
   
 
   
