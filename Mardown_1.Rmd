@@ -197,6 +197,14 @@ numeric_vars <- Imputed_Data_Combined %>%
 cor_matrix <- cor(numeric_vars)
 cor_matrix
 ```
+Kluczowe wnioski:
+
+1. Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza to, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
+2. Wyraźna dodatnia korelacja między liczbą pięter w budynku a piętrem mieszkania (0.67): Wskazuje na logiczną zależność – wyższe mieszkania częściej znajdują się w budynkach o większej liczbie pięter.
+3. Brak istotnej korelacji między odległością od centrum a ceną (-0.01): Oznacza, że w analizowanym zestawie danych lokalizacja względem centrum nie wpływa znacząco na cenę wynajmu.
+4. Słaba lub ujemna korelacja roku budowy z innymi zmiennymi: Budynki starsze są częściej związane z niższą liczbą pięter oraz ceną, jednak wartości korelacji (-0.02 do 0.15) są zbyt niskie, aby mówić o wyraźnym trendzie.
+
+Ogólnie analiza wskazuje, że cena wynajmu jest najmocniej powiązana z wielkością mieszkania (liczbą pokoi), natomiast lokalizacja i inne czynniki mają słabszy wpływ.
 
 3.  Macierzy oszacowanych korelacji
 
