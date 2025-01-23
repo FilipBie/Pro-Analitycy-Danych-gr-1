@@ -4,11 +4,13 @@ author: "Wanesa"
 date: "2025-01-22"
 output: html_document
 ---
+
 WIZUALIZACJA DANCYCH
 
 Odpowiednio przygotowane dane pozwolą na zilustowanie ich charakterystyk i rozkładów. Poniżej przedstawione zostały wybrane wizualizacje badanych danych
 
-1. Średnie wartości cen wynajmu w Polsce - mapa
+1.  Średnie wartości cen wynajmu w Polsce - mapa
+
 ```{r include=FALSE}
 library(dplyr)
 srednie_ceny <- Imputed_Data_Combined %>%
@@ -47,9 +49,12 @@ ggplot() +
   theme_minimal()
 ```
 
+Warszawa wyróżnia się najwyższymi średnimi cenami wynajmu w Polsce, co wynika z jej roli gospodarczego i edukacyjnego centrum kraju. Duże miasta, takie jak Gdańsk, Kraków czy Wrocław, również odnotowują wysokie koszty, głównie ze względu na turystykę i rozwój biznesowy. W mniejszych miastach, takich jak Radom czy Białystok, ceny są znacznie niższe, co może wynikać z mniejszego popytu i ograniczonej urbanizacji.
+
 2.Rozkłady
 
-a) rozkład liczby pokoi
+a)  rozkład liczby pokoi
+
 ```{r}
  ggplot(Imputed_Data_Combined, aes(x = rooms)) +
     geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
@@ -58,7 +63,10 @@ a) rozkład liczby pokoi
     theme_minimal()
 ```
 
+Wykres przedstawia rozkład liczby pokoi w mieszkaniach dostępnych na wynajem. Najwięcej ofert dotyczy mieszkań dwupokojowych, które dominują na rynku, co może wynikać z ich uniwersalności i popularności wśród wynajmujących. Mieszkania jednopokojowe i trzypokojowe stanowią mniejszą, choć znaczną część rynku, sugerując zróżnicowanie potrzeb najemców. Mieszkania cztero- i więcej pokojowe są rzadkością, co może oznaczać ograniczoną dostępność takich lokali lub niski popyt w tej kategorii.
+
 b)liczba mieszkań z windą i bez windy w różnych miastach
+
 ```{r}
 liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
     group_by(city, hasElevator) %>%
@@ -79,7 +87,10 @@ liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
 
 ```
 
-c) Liczba mieszkań w poszczególnych miastach
+Wykres przedstawia liczbę mieszkań z windą i bez windy w różnych miastach Polski. Warszawa wyraźnie dominuje pod względem liczby mieszkań, zarówno z windą, jak i bez niej, co potwierdza jej pozycję największego rynku mieszkaniowego w kraju. Miasta takie jak Kraków, Wrocław czy Łódź mają znaczącą liczbę mieszkań z windą, co świadczy o rozwoju nowoczesnej infrastruktury mieszkaniowej. W mniejszych miastach, takich jak Radom czy Białystok, liczba mieszkań bez windy przeważa, co może wynikać z obecności starszego budownictwa lub mniejszego zapotrzebowania na takie udogodnienia.
+
+c)  Liczba mieszkań w poszczególnych miastach
+
 ```{r}
  liczba_mieszkan <- Imputed_Data_Combined %>%
     group_by(city) %>%
@@ -103,9 +114,12 @@ c) Liczba mieszkań w poszczególnych miastach
   
 ```
 
+Wykres przedstawia liczbę mieszkań dostępnych w poszczególnych miastach Polski. Warszawa zdecydowanie przoduje z liczbą 3393 mieszkań, co pokazuje jej dominującą pozycję na rynku nieruchomości. Kraków zajmuje drugie miejsce z liczbą 1764 mieszkań, a Wrocław trzecie z 879, co odzwierciedla koncentrację ofert w największych aglomeracjach. Mniejsze miasta, takie jak Radom czy Białystok, mają znacznie mniejszą liczbę mieszkań, co może wynikać z ich wielkości, mniejszego zapotrzebowania na wynajem lub mniej rozwiniętego rynku nieruchomości.
+
 3. ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
 
 a)Cena wynajmu vs. Odległość od centrum
+
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
@@ -115,8 +129,10 @@ ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 ```
+Wykres przedstawia zależność między ceną wynajmu a odległością od centrum w kilometrach. Widoczny jest ogólny trend spadkowy – im dalej od centrum, tym niższe ceny wynajmu, co sugeruje, że lokalizacja jest kluczowym czynnikiem wpływającym na koszt wynajmu mieszkania. Wyjątki od tej tendencji, czyli mieszkania o bardzo wysokich cenach w większej odległości od centrum, mogą wynikać z luksusowego standardu lub wyjątkowej lokalizacji. Niemniej jednak większość mieszkań koncentruje się w niższych przedziałach cenowych, co potwierdza, że dystans od centrum pozostaje istotnym determinantem cen.
 
 Wpływ odległości do szkół na cenę mieszkań
+
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
@@ -127,8 +143,8 @@ ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     theme_minimal()
 ```
 
+------------------------------------------------------------------------
 
----
 ANALIZA OPISOWA
 
 Poniższe dane zawierają analizę opisową dla badanej bazy danych
@@ -143,6 +159,7 @@ library(corrplot)
 ```
 
 Tabela 1. Podstawowe statystyki opisowe dla kluczowych zmiennych
+
 ```{r Podstawowe statystyki opisowe dla kluczowych zmiennych, include=FALSE}
 key_vars <- c("price", "squareMeters", "rooms", "centreDistance", 
               "schoolDistance", "clinicDistance", "buildYear")
@@ -159,6 +176,7 @@ stats <- Imputed_Data_Combined %>%
   ))
 
 ```
+
 ```{r echo=FALSE}
 
 # Wyświetl wyniki
@@ -167,8 +185,8 @@ print(stats)
 view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
 ```
 
+2.  Szacowanie korelacji dla wybranych danych ilościowych (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
 
-2. Szacowanie korelacji dla wybranych danych ilościowych (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
 ```{r Szacowanie korelacji dla wybranych danych ilościowych, echo=FALSE}
 numeric_vars <- Imputed_Data_Combined %>%
   select("price","rooms","floor","centreDistance","floorCount","buildYear") %>%
@@ -178,10 +196,9 @@ cor_matrix <- cor(numeric_vars)
 cor_matrix
 ```
 
-3. Macierzy oszacowanych korelacji 
+3.  Macierzy oszacowanych korelacji
+
 ```{r Macierzy oszacowanych korelacji, echo=FALSE}
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
-
-
