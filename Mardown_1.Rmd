@@ -142,6 +142,7 @@ ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 ```
+Wykres przedstawia zależność między odległością od szkoły a ceną wynajmu mieszkania. Zauważalny jest delikatny trend spadkowy – im większa odległość od szkoły, tym niższe ceny wynajmu, co sugeruje, że bliskość do placówek edukacyjnych może być atutem podnoszącym koszt wynajmu. Najwyższe ceny mieszkań skupiają się w bliskiej odległości od szkół, co może wynikać z preferencji rodzin z dziećmi lub studentów szukających lokum w pobliżu. Jednak dla odległości powyżej 1-2 km różnice cenowe stają się mniej wyraźne, co wskazuje, że wpływ bliskości szkoły jest najsilniejszy w bezpośrednim sąsiedztwie.
 
 ------------------------------------------------------------------------
 
@@ -156,6 +157,7 @@ library(dplyr)
 library(ggplot2)
 library(summarytools)
 library(corrplot)
+install.packages()
 ```
 
 Tabela 1. Podstawowe statystyki opisowe dla kluczowych zmiennych
