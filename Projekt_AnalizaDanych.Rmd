@@ -1,83 +1,262 @@
 ---
-title: "Projekt_AnalizaDanych"
-author: "Adrianna Kluk, Sebastian Gebczyk"
-date: "2024-12-05"
-output: html_document
+title: 'Analiza Danych: Projekt'
+author: "F. Bieszke, S. Gębczyk, A. Kluk, W. Konkel"
+date: "2025-01-29"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
 ---
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, include = FALSE)
-#instalacja potrzebnych pakietow/bibliotek
-library(dplyr)
-library(ggplot2)
-library(VIM)
-library(naniar)
-library(Amelia)
-library(mice)
+# Wyczyszczenie pamięci podręcznej przed uruchomieniem całego dokumentu
+knitr::clean_cache()
 ```
 
-```{r miesieczna migawka ofert wynajmu, echo=FALSE}
-data <- read.csv("apartments_rent_pl_2024_06.csv")
+## I Wprowadzenie
+### Cel Projektu
+Rynek nieruchomości odgrywa kluczową rolę w gospodarce, wpływając na życie społeczne ludzi oraz ich inwestycje finansowe. Ceny mieszkań zależą od wielu czynników, takich jak: lokalizacja, metraż, liczba pokoi, czy liczba udogodnień występujących w mieszkaniu. Analizowane przez nas dane są o tyle istotne, że pozwalają zrozumieć specyfikę tego rynku, mechanizmy kształtowania cen oraz wymogi potencjalnych nabywców. Wyniki analizy mogą pomóc zarówno inwestorom, jak i osobom prywatnym w podejmowaniu świadomym decyzji. To także szansa na prognozowanie przyszłych trendów na tym dynamicznie zmieniającym się rynku.  
+<br>
 
-data[data == ""] <- NA   #puste pola zamienione w NA
+### Otrzymane dane
+Projekt opiera się na analizie poniższego zbioru danych. Zawiera on informacje o wynajmie mieszkań z 15 największych miast w Polsce, obejmuje okres od sierpnia 2023 roku do czerwca 2024 roku, w tym zawarte są dane, takie jak cena, miasto, metraż i liczba pokoi. Zestaw zawiera 8849 ogłoszeń (wierszy) z portalu Otodom.pl, uwzględniających po 28 zmiennych (kolumn). 
+```{r}
+#Wczytanie pierwotnych danych do analizy
+  dane <- read.csv("apartments_rent_pl_2024_06.csv")
+```
 
+<br>
+<br>
 
-na_counts <- colSums(is.na(data))
+## II Data Cleaning, Data Wrangling
+
+### Przedstawienie otrzymanych zmiennych
+Przed przystąpieniem do analizy należy przekształcić otrzymane dane z „surowej” formy, aby stały się bardziej odpowiednie i wartościowe do różnych celów, takich jak analityka.
+```{r}
+#Sprawdzanie wartości w zmiennej ownership
+table(dane$ownership)
+```
+Zmienna `ownership` zawiera w każdej w każdej obserwacji tę samą wartość. Skoro nie wykazuje żadnej zmienności, nie wpłynie w żaden sposób na wyniki analizy i można ją usunąć.
+```{r}
+#Usuwanie kolumny numer 20, kolumny o nazwie "ownership"
+dane <- dane[,-20]
+```
+
+Przedstawienie zmiennych:
+
+- `id` - unikalny identyfikator ogłoszenia.
+
+- `city` - nazwa miasta, w którym znajduje się nieruchomość.
+
+- `type` - typ budynku.
+
+- `squareMeters` - wielkość mieszkania w metrach kwadratowych.
+
+- `rooms` - liczba pokoi w mieszkaniu.
+
+- `floor`/`floorCount` - piętro, na którym znajduje się mieszkanie/całkowita liczba pięter w budynku.
+
+- `buildYear` - rok, w którym budynek został zbudowany.
+
+- `latitude`/`longitude` - współrzędne geograficzne nieruchomości.
+
+- `centreDistance` - odległość od centrum miasta w km.
+
+- `poiCount` - liczba interesujących miejsc w promieniu 500m od mieszkania (szkoły, przychodnie, poczta, przedszkola, restauracje, uczelnie, apteki).
+
+- `schoolDistance`/`clinicDistance`/`postOfficeDistance`/`kindergartenDistance`/`restaurantDistance`/`collegeDistance`/`pharmacyDistance` - odległości od najbliższych wskazanych punktów (szkoły, przychodnie, poczta, przedszkola, restauracje, uczelnie, apteki).
+
+- `buildingMaterial` - materiał budowy budynku mieszkalnego.
+
+- `condition` - stan mieszkania.
+
+- `hasParkingSpace`/`hasBalcony`/`hasElevator`/`hasSecurity`/`hasStorageRoom` - czy nieruchomość posiada kluczowe udogodnienia, takie jak przypisane miejsce parkingowe, balkon, winda, ochrona, komórka lokatorska (piwnica).
+
+- `price` - cena ofertowa w polskich złotych, miesięczny czynsz.
+
+### Wstępny podgląd danych przed czyszczeniem
+```{r}
+#Podstawowe sprawdzenie danych
+head(dane)
+```
+
+Już na podstawie powyższych danych widać, że występują puste pola, tzw. **braki danych**. Należy te pola uprzednio podmienić na NA, aby w następnych etapach zastosować imputację danych. 
+
+### Analiza braków danych
+```{r}
+#Podmiana wszystkich pustych pól na NA
+dane[dane == ""] <- NA  
+```
+Wszystkiego puste pola zostały zamienione w NA. Teraz należy wskazać brakującą liczbę danych w każdej z kolumn analizowanego zbioru danych.
+```{r}
+na_counts <- colSums(is.na(dane))
 na_counts_df <- as.data.frame(na_counts)
-print(na_counts_df)
-```
-
-#Powyzsza tabela przedstawia liczbe brakujacych danych w kazdej z badanych 28 zmiennych. Braki ukazane sa w ujeciu liczbowym. Zdecydowanie najwiecej brakow wystepuje w kolumnie zmiennej o nazwie condition, bo az 6329. Duza liczba brakow wyrozniaja sie takze zmienne: buildingMaterial (3505), buildYear (2249), type(1830) oraz floor(1053). Pozostale zmienne cechuja sie juz znacznie mniejsza liczba brakujacych danych. Pietnascie sposrod badanych zmiennych zawiera kompletne dane.
-
-```{r echo=FALSE}
-n_miss(data)
-n_complete(data)
+print(na_counts_df) #Dany fragment kodu tworzy ramkę danych, ukazującą liczbę brakujących wartości (NA) dla każdej kolumny w analizowanym zbiorze danych.
 
 ```
+Powyższa tabela przedstawia liczbę brakujących danych w każdej z badanych 27 zmiennych. Braki ukazane są w ujęciu liczbowym. Zdecydowanie najwięcej braków występuje w kolumnie zmiennej o nazwie condition, bo aż 6329. Dużą liczbą braków wyróżniają się także zmienne: buildingMaterial (3505), buildYear (2249), type(1830) oraz floor(1053). Pozostałe zmienne cechują się już znacznie mniejszą liczbą brakujących danych. Czternaście spośród badanych zmiennych zawiera kompletne dane.
 
-#Laczna liczba brakow w calym analizowym zbiorze danych wynosi 15762, natomiast calkowita liczba kompletnych wartosci wynosi 232010. Zatem znaczna wiekszosc wartosci jest nam znana.
+```{r}
+#Wczytanie pakietu naniar
+library(naniar)
+```
+Pakiet naniar dodaje nowe funkcje, które zwracają łączną liczbę brakujących oraz kompletnych wartości.
+```{r}
+n_miss(dane)
+n_complete(dane)
+```
+Łączna liczba braków w całym analizowanym zbiorze danych wynosi 15762, natomiast całkowita liczba kompletnych wartości wynosi 223161. Zatem znaczna większość wartości jest nam znana (braki danych stanowią około 6.6% wszystkich wartości).
 
-```{r tabela podsumowująca liczby i proporcje wartosci NA, echo=FALSE}
-#tabela podsumowująca liczby i proporcje wartosci NA
-miss_var_summary(data) 
+Poniższy kod i poniższa tabela ukazują z kolei proporcje wartości NA. 
+```{r}
+#tabela podsumowująca liczby i proporcje wartości NA
+print(miss_var_summary(dane), n=27) 
+```
+Powyższa tabela ukazuje nie tylko wartości liczbowe brakujących danych w każdej zmiennej, ale także ich proporcje do łącznej sumy obserwacji. Począwszy od kolumn posiadających najmniej kompletnych danych.
 
+
+``` {r}
+#Wczytanie pakietów do graficznej prezentacji brakujących danych
+library(ggplot2)
+library(Amelia)
 ```
 
-#Powyzsza tabela ukazuje nie tylko wartosci liczbowe brakujacych danych w kazdej zmiennej, ale takze ich proporcje do lacznej sumy obserwacji. Poczawszy od wartosci posiadajac najmniej kompletnych danych.
+<br> 
 
-```{r echo=FALSE}
-table(sapply(data, class))
-```
-
-#Najwiecej badanych zmiennych wystepuje w postaci liczb zmiennoprzecinkowych, jest ich 16, kolumn zmiennych w postaci tekstowej jest 10, a zmienna w postaci liczby calkowitej wystepuje tylko raz.
-
-```{r Wizualizacja brakow danych w calym zbiorze, echo=FALSE}
-
-vis_miss(data) +
-  ggtitle("Wizualizacja brakow danych w calym zbiorze")
-```
-
-```{r Wizualizacja brakow danych w poszczegolnych kolumnacjh, echo=FALSE}
-gg_miss_var(data) +
-  ggtitle("Wizualizacja brakow danych w poszczegolnych kolumnach")
-```
-
-```{r Mapa brakow danych, echo=FALSE}
-
-missmap(data, main="Mapa brakow danych")
+Poniższe wizualizacje pokazują rozmieszczenie braków danych w całym zbiorze:
+```{r}
+vis_miss(dane) +
+  ggtitle("Wizualizacja braków danych w całym zbiorze")
 
 ```
 
-```{r Klasyfikacja brakow danych, echo=FALSE}
-mcar_test(data)
-md.pattern(data)
-aggr_plot <- aggr(data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+```{r}
+gg_miss_var(dane) +
+  ggtitle("Wizualizacja braków danych w poszczególnych kolumnach")
 ```
 
-```{r Analiza wzorcow brakow}
-
-md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
-
-#Outliers w pozniejszym etapie tez o nich nie zapomniec
+```{r}
+missmap(dane, main="Mapa braków danych", col=c("red", "green"), legend=TRUE)
 ```
 
+```{r}
+#Sprawdzenie czy brakujące dane są całkowicie losowe, czy też zależą od innych zmiennych
+mcar_test(dane)
+```
+Na podstawie uzyskanych wyników możemy stwierdzić, że brakujące dane nie są MCAR (Missing Completely At Random). 
+
+<br>
+
+### Zidentyfikowane problemy w zbiorze danych
+1. W zbiorze danych istnieje mnóstwo wartości NA. Zatem konieczne będzie zastosowanie różnych metod w celu uzupełnienia braków danych.
+2. Zmienna `id` to unikalny identyfikator dla każdego mieszkania, więc nie wnosi ona niczego do analizy. W związku z tym zostanie usunięta w kolejnym etapie.
+
+### Czyszczenie i imputacja braków danych
+```{r}
+#Usunięcie zmiennej id, która znajduje się w pierwszej kolumnie
+dane <- dane[,-1]
+```
+W tej chwili mamy 26 zmiennych i 8849 obserwacji.
+``` {r, eval=FALSE}
+#Wczytanie bibliotek potrzebnych do imputacji danych
+library(mice)
+library(VIM)
+```
+
+```{r, eval=FALSE}
+#Dodanie nowych kolumn do imputacji liczbowej
+cols_to_imput <- c("floor", "floorCount", "buildYear", 
+              "pharmacyDistance", "clinicDistance", "postOfficeDistance", 
+              "kindergartenDistance", "restaurantDistance", "collegeDistance")
+```
+
+### Imputacja danych liczbowych przy użyciu MICE
+```{r, eval=FALSE}
+mice_result <- mice(dane[cols_to_imput], m = 5, method = 'pmm', maxit = 5, seed = 123)
+dane[cols_to_imput] <- complete(mice_result)
+```
+Za pomocą powyższej komendy zimputowaliśmy brakujące wartości liczbowe w określonych kolumnach zbioru `dane` i zastąpiliśmy je danymi wygenerowanymi przez algorytm MICE.
+
+```{r, eval=FALSE}
+#Dodanie kolumn kategorycznych w celu imputacji Hotdeck
+cat_cols <- c("type", "buildingMaterial", "condition", "hasParkingSpace", 
+              "hasBalcony", "hasElevator", "hasSecurity", "hasStorageRoom")
+```
+
+### Imputacja danych kategorycznych przy użyciu Hotdeck
+```{r, eval=FALSE}
+#Uzupełnienie brakujących danych typu kategorycznego. 
+hotdeck_result <- hotdeck(dane, variable = cat_cols)
+dane[cat_cols] <- hotdeck_result[cat_cols]
+```
+Powyższy kod imputuje brakujące dane w kolumnach kategorycznych przy użyciu metody hot deck, zastępując brakujące wartości wartościami z innych, podobnych przypadków w zbiorze danych.
+
+<br>
+Teraz po zastąpieniu braków w danych ilościowych i jakościowych, nie występują żadne wartości NA w naszym zbiorze danych.
+
+```{r}
+#Zapisanie danych po imputacji
+write.csv(dane, "Imputed_Data_Combined.csv", row.names = FALSE)
+```
+W projekcie imputacja brakujących danych była kluczowym etapem przygotowania zbioru danych do dalszej analizy. Imputacja jest ważna, ponieważ brakujące dane mogą wprowadzać błędy i utrudniać rzetelne przeprowadzanie analiz. Zamiast ignorować lub usuwać wiersze z brakującymi wartościami, które mogłyby zniekształcić wyniki, zastosowano metodę imputacji, aby zastąpić brakujące wartości oszacowanymi danymi, zachowując spójność i pełność zestawu danych.
+
+Pierwszym krokiem było zamienienie pustych wartości w zbiorze danych na NA, co umożliwiło dalsze operacje imputacyjne. Dla zmiennych liczbowych, takich jak powierzchnia mieszkania, liczba pięter czy odległości do punktów użyteczności publicznej, zastosowano metodę imputacji przy użyciu algorytmu MICE (Multiple Imputation by Chained Equations) i metody pmm (Predictive Mean Matching). Ta technika pozwala na dokładne uzupełnienie brakujących danych na podstawie obserwacji o podobnych wartościach.
+
+Z kolei dla zmiennych kategorycznych, takich jak typ budynku, stan mieszkania czy dostępność udogodnień (np. parking czy balkon), wykorzystano metodę Hotdeck. Polega ona na imputacji brakujących wartości na podstawie najbardziej podobnych rekordów w danych, co jest szczególnie skuteczne w przypadku zmiennych o charakterze jakościowym.
+
+Na koniec przeprowadzono analizę braków danych w zbiorze, aby ocenić skuteczność imputacji i upewnić się, że brakujące wartości zostały odpowiednio uzupełnione. Cały proces zakończył się zapisaniem wynikowego zbioru danych do pliku CSV.
+
+Dzięki imputacji, dane stały się kompletne i gotowe do dalszych analiz.
+
+
+
+```{r}
+sum(is.na(dane))
+```
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+## III Wizualizacja danych 
+
+
+
+## IV Analiza opisowa
+
+
+
+
+
+## V Wnioskowanie (testy statystyczne)
+
+
+
+
+
+## VI Podsumowanie i wnioski końcowe
+
+
+
+
+
+
+<!-- Nagłówki poniżej, a to jest komentarz -->
+# Nag 1
+## Nag 2
+### Nag 3
