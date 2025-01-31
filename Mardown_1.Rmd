@@ -124,15 +124,53 @@ list(
 )
 ```
 
-1.  **Metraż (`squareMeters`)**: Sprawdzono, czy wartości metrażu są dodatnie. W tym celu wyselekcjonowano rekordy, gdzie `squareMeters` było mniejsze lub równe zero. Nie znaleziono żadnych przypadków, co oznacza, że wszystkie mieszkania mają poprawny, dodatni metraż.
+**Metraż (`squareMeters`)**: Sprawdzono, czy wartości metrażu są dodatnie. W tym celu wyselekcjonowano rekordy, gdzie `squareMeters` było mniejsze lub równe zero. Nie znaleziono żadnych przypadków, co oznacza, że wszystkie mieszkania mają poprawny, dodatni metraż.
 
-2.  **Liczba pokoi (`rooms`)**: Przeanalizowano, czy liczba pokoi jest dodatnią liczbą całkowitą. Wyselekcjonowano rekordy, gdzie `rooms` było mniejsze lub równe zero lub nie było liczbą całkowitą. Nie znaleziono błędów, co potwierdza, że wszystkie wartości liczby pokoi są poprawne.
+**Liczba pokoi (`rooms`)**: Przeanalizowano, czy liczba pokoi jest dodatnią liczbą całkowitą. Wyselekcjonowano rekordy, gdzie `rooms` było mniejsze lub równe zero lub nie było liczbą całkowitą. Nie znaleziono błędów, co potwierdza, że wszystkie wartości liczby pokoi są poprawne.
 
-3.  **Piętro (`floor`)**: Sprawdzono, czy piętro, na którym znajduje się mieszkanie, nie przekracza łącznej liczby pięter w budynku (`floorCount`). Wyselekcjonowano rekordy, gdzie `floor` było większe niż `floorCount`. Nie znaleziono takich przypadków, co wskazuje, że dane dotyczące pięter są spójne.
+**Piętro (`floor`)**: Sprawdzono, czy piętro, na którym znajduje się mieszkanie, nie przekracza łącznej liczby pięter w budynku (`floorCount`). Wyselekcjonowano rekordy, gdzie `floor` było większe niż `floorCount`. Nie znaleziono takich przypadków, co wskazuje, że dane dotyczące pięter są spójne.
 
-4.  **Cena (`price`)**: Przeanalizowano, czy ceny mieszkań są dodatnie. Wyselekcjonowano rekordy, gdzie `price` było mniejsze lub równe zero. Nie znaleziono błędów, co potwierdza, że wszystkie ceny są dodatnie.
+**Cena (`price`)**: Przeanalizowano, czy ceny mieszkań są dodatnie. Wyselekcjonowano rekordy, gdzie `price` było mniejsze lub równe zero. Nie znaleziono błędów, co potwierdza, że wszystkie ceny są dodatnie.
 
-## IMPUTACJA BRAKÓW DANYCH
+3.  Sprawdzenie unikalnych wartości dla kolumn kategorycznych
+
+```{r echo=FALSE}
+# Podpunkt 4: Sprawdzenie unikalnych wartości dla kolumn kategorycznych
+
+# 4.1 Sprawdzenie unikalnych wartości w kolumnie 'type'
+unique_types <- unique(apartments_rent_pl_2024_06$type)
+
+# 4.2 Sprawdzenie unikalnych wartości w kolumnie 'ownership'
+unique_ownership <- unique(apartments_rent_pl_2024_06$ownership)
+
+# 4.3 Sprawdzenie unikalnych wartości w kolumnie 'condition'
+unique_condition <- unique(apartments_rent_pl_2024_06$condition)
+
+# 4.4 Sprawdzenie unikalnych wartości w kolumnie 'buildingMaterial'
+unique_buildingMaterial <- unique(apartments_rent_pl_2024_06$buildingMaterial)
+
+# Wyświetlenie wyników
+list(
+  unique_types = unique_types,
+  unique_ownership = unique_ownership,
+  unique_condition = unique_condition,
+  unique_buildingMaterial = unique_buildingMaterial
+)
+```
+
+W kolejnym etapie analizy danych skupiono się na sprawdzeniu unikalnych wartości dla kolumn kategorycznych w zbiorze danych `apartments_rent_pl_2024_06`. Przeanalizowano cztery kolumny: `type`, `ownership`, `condition` oraz `buildingMaterial`.
+
+**Typ nieruchomości (`type`)**: Wyodrębniono unikalne wartości w kolumnie `type`, które określają rodzaj mieszkania. Wynikiem tej operacji jest lista unikalnych kategorii, które występują w danych.
+
+**Forma własności (`ownership`)**: Sprawdzono unikalne wartości w kolumnie `ownership`, które opisują formę własności nieruchomości. Uzyskano listę wszystkich możliwych opcji w tej kategorii.
+
+**Stan nieruchomości (`condition`)**: Przeanalizowano unikalne wartości w kolumnie `condition`, które opisują stan techniczny mieszkania. Wynikiem jest lista dostępnych stanów nieruchomości.
+
+**Materiał budynku (`buildingMaterial`)**: Sprawdzono unikalne wartości w kolumnie `buildingMaterial`, które określają materiał, z którego wykonany jest budynek. Uzyskano listę wszystkich materiałów występujących w danych.
+
+Analiza ta pozwala na lepsze zrozumienie struktury danych oraz identyfikację ewentualnych nieoczekiwanych lub nieprawidłowych kategorii w kolumnach kategorycznych, które w naszym przypadku się nie pojawiły.
+
+5.  IMPUTACJA BRAKÓW DANYCH
 
 ```{r include=FALSE}
 # Wczytaj bibliotekę i dane
