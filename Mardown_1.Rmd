@@ -97,52 +97,40 @@ apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
 ```
 
-2.  Walidacja zakresów i wartości
-
-2.1 Sprawdzenie, czy `squareMeters` ma wartości dodatnie
+2.  W ramach przeprowadzonej walidacji danych dotyczących mieszkań do wynajęcia w Polsce (zbiór danych `apartments_rent_pl_2024_06`) wykonano szczegółowe sprawdzenie poprawności zakresów i wartości dla czterech kluczowych zmiennych: metrażu (`squareMeters`), liczby pokoi (`rooms`), piętra (`floor`) oraz ceny (`price`). Każda z tych zmiennych została poddana indywidualnej analizie w celu wykrycia potencjalnych błędów lub nieprawidłowości.
 
 ```{r echo=FALSE}
+# Podpunkt 3: Walidacja zakresów i wartości
+
+# 3.1 Sprawdzenie, czy 'squareMeters' ma wartości dodatnie
 squareMeters_check <- subset(apartments_rent_pl_2024_06, squareMeters <= 0)
-```
 
-Nie zidentyfikowano mieszkania o niepoprawnym metrażu (np. ujemne lub zerowe wartości).
-
-2.2 Sprawdzenie, czy `rooms` ma wartości całkowite i większe od zera
-
-```{r echo=FALSE}
+# 3.2 Sprawdzenie, czy 'rooms' ma wartości całkowite i większe od zera
 rooms_check <- subset(apartments_rent_pl_2024_06, rooms <= 0 | rooms %% 1 != 0)
-```
 
-`rooms_check`nie wykazał obecność błędnych wartości (np. ujemna liczba pokoi lub wartości niecałkowite).
-
-2.3 Sprawdzenie, czy `floor` jest mniejsze lub równe `floorCount`
-
-```{r echo=FALSE}
+# 3.3 Sprawdzenie, czy 'floor' jest mniejsze lub równe 'floorCount'
 floor_check <- subset(apartments_rent_pl_2024_06, floor > floorCount)
-```
 
-Nie zidentyfikowano przypadków, w których mieszkania znajdują się na piętrach wyższych niż całkowita liczba pięter w budynku, co nie wskazuje na błędy w danych w tym zakresie.
-
-2.4 Sprawdzenie, czy `price` jest liczbą dodatnią
-
-```{r echo=FALSE}
+# 3.5 Sprawdzenie, czy 'price' jest liczbą dodatnią
 price_check <- subset(apartments_rent_pl_2024_06, as.numeric(price) <= 0)
-```
 
-Nie zidentyfikowano mieszkań z niepoprawną wartością ceny (np. 0 lub ujemną).
-
-2.5 Wyświetlenie wyników walidacji
-
-```{r echo=FALSE}
+# Wyświetlenie wyników walidacji
 list(
   squareMeters_check = squareMeters_check,
   rooms_check = rooms_check,
   floor_check = floor_check,
+  buildYear_check = buildYear_check,
   price_check = price_check
 )
 ```
 
-Na podstawie tych wyników stwierdzono spójność przetestowanych zmiennych
+1.  **Metraż (`squareMeters`)**: Sprawdzono, czy wartości metrażu są dodatnie. W tym celu wyselekcjonowano rekordy, gdzie `squareMeters` było mniejsze lub równe zero. Nie znaleziono żadnych przypadków, co oznacza, że wszystkie mieszkania mają poprawny, dodatni metraż.
+
+2.  **Liczba pokoi (`rooms`)**: Przeanalizowano, czy liczba pokoi jest dodatnią liczbą całkowitą. Wyselekcjonowano rekordy, gdzie `rooms` było mniejsze lub równe zero lub nie było liczbą całkowitą. Nie znaleziono błędów, co potwierdza, że wszystkie wartości liczby pokoi są poprawne.
+
+3.  **Piętro (`floor`)**: Sprawdzono, czy piętro, na którym znajduje się mieszkanie, nie przekracza łącznej liczby pięter w budynku (`floorCount`). Wyselekcjonowano rekordy, gdzie `floor` było większe niż `floorCount`. Nie znaleziono takich przypadków, co wskazuje, że dane dotyczące pięter są spójne.
+
+4.  **Cena (`price`)**: Przeanalizowano, czy ceny mieszkań są dodatnie. Wyselekcjonowano rekordy, gdzie `price` było mniejsze lub równe zero. Nie znaleziono błędów, co potwierdza, że wszystkie ceny są dodatnie.
 
 ## IMPUTACJA BRAKÓW DANYCH
 
