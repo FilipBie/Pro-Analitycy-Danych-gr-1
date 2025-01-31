@@ -97,6 +97,53 @@ apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
 ```
 
+2.  Walidacja zakresów i wartości
+
+2.1 Sprawdzenie, czy `squareMeters` ma wartości dodatnie
+
+```{r echo=FALSE}
+squareMeters_check <- subset(apartments_rent_pl_2024_06, squareMeters <= 0)
+```
+
+Nie zidentyfikowano mieszkania o niepoprawnym metrażu (np. ujemne lub zerowe wartości).
+
+2.2 Sprawdzenie, czy `rooms` ma wartości całkowite i większe od zera
+
+```{r echo=FALSE}
+rooms_check <- subset(apartments_rent_pl_2024_06, rooms <= 0 | rooms %% 1 != 0)
+```
+
+`rooms_check`nie wykazał obecność błędnych wartości (np. ujemna liczba pokoi lub wartości niecałkowite).
+
+2.3 Sprawdzenie, czy `floor` jest mniejsze lub równe `floorCount`
+
+```{r echo=FALSE}
+floor_check <- subset(apartments_rent_pl_2024_06, floor > floorCount)
+```
+
+Nie zidentyfikowano przypadków, w których mieszkania znajdują się na piętrach wyższych niż całkowita liczba pięter w budynku, co nie wskazuje na błędy w danych w tym zakresie.
+
+2.4 Sprawdzenie, czy `price` jest liczbą dodatnią
+
+```{r echo=FALSE}
+price_check <- subset(apartments_rent_pl_2024_06, as.numeric(price) <= 0)
+```
+
+Nie zidentyfikowano mieszkań z niepoprawną wartością ceny (np. 0 lub ujemną).
+
+2.5 Wyświetlenie wyników walidacji
+
+```{r echo=FALSE}
+list(
+  squareMeters_check = squareMeters_check,
+  rooms_check = rooms_check,
+  floor_check = floor_check,
+  price_check = price_check
+)
+```
+
+Na podstawie tych wyników stwierdzono spójność przetestowanych zmiennych
+
 ## IMPUTACJA BRAKÓW DANYCH
 
 ```{r include=FALSE}
