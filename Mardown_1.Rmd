@@ -83,6 +83,20 @@ md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
 #Outliers w pozniejszym etapie tez o nich nie zapomniec
 ```
 
+# Walidacja danych
+
+Przeprowadzono walidację danych dla zbioru `apartments_rent_pl_2024_06`. Zweryfikowano m.in. poprawność wartości liczbowych, spójność danych oraz unikalność wartości w kolumnach kategorycznych.
+
+1.  Zamiana pustych wartości na NA
+
+Wszystkie puste wartości w zbiorze danych zamieniono na `NA`, co ułatwia dalszą analizę.
+
+```{r echo=FALSE}
+
+apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
+
+```
+
 ## IMPUTACJA BRAKÓW DANYCH
 
 ```{r include=FALSE}
