@@ -83,7 +83,7 @@ md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
 #Outliers w pozniejszym etapie tez o nich nie zapomniec
 ```
 
-# Walidacja danych
+## Walidacja danych
 
 Przeprowadzono walidację danych dla zbioru `apartments_rent_pl_2024_06`. Zweryfikowano m.in. poprawność wartości liczbowych, spójność danych oraz unikalność wartości w kolumnach kategorycznych.
 
@@ -170,7 +170,7 @@ W kolejnym etapie analizy danych skupiono się na sprawdzeniu unikalnych wartoś
 
 Analiza ta pozwala na lepsze zrozumienie struktury danych oraz identyfikację ewentualnych nieoczekiwanych lub nieprawidłowych kategorii w kolumnach kategorycznych, które w naszym przypadku się nie pojawiły.
 
-5.  IMPUTACJA BRAKÓW DANYCH
+## IMPUTACJA BRAKÓW DANYCH
 
 ```{r include=FALSE}
 # Wczytaj bibliotekę i dane
