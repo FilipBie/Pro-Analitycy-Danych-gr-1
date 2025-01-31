@@ -1,0 +1,353 @@
+---
+title: "Analiza opisowa"
+author: "Wanesa"
+date: "2025-01-22"
+output: html_document
+---
+
+## ANALIZA BRAKÓW DANYCH
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, include = FALSE)
+#instalacja potrzebnych pakietow/bibliotek
+library(dplyr)
+library(ggplot2)
+library(VIM)
+library(naniar)
+library(Amelia)
+library(mice)
+```
+
+```{r miesieczna migawka ofert wynajmu, echo=FALSE}
+data <- read.csv("apartments_rent_pl_2024_06.csv")
+
+data[data == ""] <- NA   #puste pola zamienione w NA
+
+
+na_counts <- colSums(is.na(data))
+na_counts_df <- as.data.frame(na_counts)
+print(na_counts_df)
+```
+
+Powyzsza tabela przedstawia liczbe brakujacych danych w kazdej z badanych 28 zmiennych. Braki ukazane sa w ujeciu liczbowym. Zdecydowanie najwiecej brakow wystepuje w kolumnie zmiennej o nazwie condition, bo az 6329. Duza liczba brakow wyrozniaja sie takze zmienne: buildingMaterial (3505), buildYear (2249), type(1830) oraz floor(1053). Pozostale zmienne cechuja sie juz znacznie mniejsza liczba brakujacych danych. Pietnascie sposrod badanych zmiennych zawiera kompletne dane.
+
+```{r echo=FALSE}
+n_miss(data)
+n_complete(data)
+
+```
+
+Łączna liczba brakow w calym analizowym zbiorze danych wynosi 15762, natomiast calkowita liczba kompletnych wartosci wynosi 232010. Zatem znaczna wiekszosc wartosci jest nam znana.
+
+```{r tabela podsumowująca liczby i proporcje wartosci NA, echo=FALSE}
+#tabela podsumowująca liczby i proporcje wartosci NA
+miss_var_summary(data) 
+
+```
+
+Powyzsza tabela ukazuje nie tylko wartosci liczbowe brakujacych danych w kazdej zmiennej, ale takze ich proporcje do lacznej sumy obserwacji. Poczawszy od wartosci posiadajac najmniej kompletnych danych.
+
+```{r echo=FALSE}
+table(sapply(data, class))
+```
+
+Najwiecej badanych zmiennych wystepuje w postaci liczb zmiennoprzecinkowych, jest ich 16, kolumn zmiennych w postaci tekstowej jest 10, a zmienna w postaci liczby calkowitej wystepuje tylko raz.
+
+```{r Wizualizacja brakow danych w calym zbiorze, echo=FALSE}
+
+vis_miss(data) +
+  ggtitle("Wizualizacja brakow danych w calym zbiorze")
+```
+
+```{r Wizualizacja brakow danych w poszczegolnych kolumnacjh, echo=FALSE}
+gg_miss_var(data) +
+  ggtitle("Wizualizacja brakow danych w poszczegolnych kolumnach")
+```
+
+```{r Mapa brakow danych, echo=FALSE}
+
+missmap(data, main="Mapa brakow danych")
+
+```
+
+```{r Klasyfikacja brakow danych, echo=FALSE}
+mcar_test(data)
+md.pattern(data)
+aggr_plot <- aggr(data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+
+```{r Analiza wzorcow brakow}
+
+md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
+
+#Outliers w pozniejszym etapie tez o nich nie zapomniec
+```
+
+## IMPUTACJA BRAKÓW DANYCH
+
+```{r include=FALSE}
+# Wczytaj bibliotekę i dane
+library(readxl)
+library(mice)
+library(VIM)
+```
+
+```{r include=FALSE}
+# Funkcja zamieniająca wszystkie puste wartości na NA
+apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
+
+# Wczytaj dane z pliku
+
+data <- apartments_rent_pl_2024_06
+
+# Sprawdź dane
+str(data)
+summary(data)
+```
+
+```{r include=FALSE}
+# Dodanie nowych kolumn do imputacji liczbowej
+num_cols <- c("squareMeters", "floor", "floorCount", "buildYear", "latitude", "longitude", 
+              "pharmacyDistance", "clinicDistance", "postOfficeDistance", 
+              "kindergartenDistance", "restaurantDistance", "collegeDistance")
+
+# Imputacja danych liczbowych przy użyciu MICE
+mice_result <- mice(data[num_cols], m = 5, method = 'pmm', maxit = 5, seed = 123)
+
+
+# Dodanie imputowanych kolumn liczbowych do danych
+data[num_cols] <- complete(mice_result)
+
+# Kolumny kategoryczne do imputacji Hotdeck
+cat_cols <- c("type", "ownership", "buildingMaterial", "condition", "hasParkingSpace", 
+              "hasBalcony", "hasElevator", "hasSecurity", "hasStorageRoom")
+
+# Imputacja danych kategorycznych przy użyciu Hotdeck
+hotdeck_result <- hotdeck(data, variable = cat_cols)
+
+# Dodanie imputowanych kolumn kategorycznych do danych
+data[cat_cols] <- hotdeck_result[cat_cols]
+
+# Sprawdź wynikowe dane
+summary(data)
+
+# Funkcja do sprawdzania braków danych (NA) w każdej kolumnie
+check_na <- function(data) {
+  na_summary <- data.frame(
+    Column = colnames(data),
+    MissingCount = sapply(data, function(x) sum(is.na(x))),
+    TotalRows = nrow(data),
+    MissingPercentage = sapply(data, function(x) round(sum(is.na(x)) / nrow(data) * 100, 2))
+  )
+  return(na_summary)
+}
+
+
+# Wywołanie funkcji dla Twojego zestawu danych
+na_summary <- check_na(data)
+
+# Wyświetlenie wyników
+print(na_summary)
+
+# Zapisz dane do pliku wynikowego
+write.csv(data, "Imputed_Data_Combined.csv", row.names = FALSE)
+```
+
+W projekcie imputacja brakujących danych była kluczowym etapem przygotowania zbioru danych do dalszej analizy. Imputacja jest ważna, ponieważ brakujące dane mogą wprowadzać błędy i utrudniać rzetelne przeprowadzanie analiz. Zamiast ignorować lub usuwać wiersze z brakującymi wartościami, które mogłyby zniekształcić wyniki, zastosowano metodę imputacji, aby zastąpić brakujące wartości oszacowanymi danymi, zachowując spójność i pełność zestawu danych.
+
+Pierwszym krokiem było zamienienie pustych wartości w zbiorze danych na NA, co umożliwiło dalsze operacje imputacyjne. Dla zmiennych liczbowych, takich jak powierzchnia mieszkania, liczba pięter czy odległości do punktów użyteczności publicznej, zastosowano metodę imputacji przy użyciu algorytmu MICE (Multiple Imputation by Chained Equations) i metody pmm (Predictive Mean Matching). Ta technika pozwala na dokładne uzupełnienie brakujących danych na podstawie obserwacji o podobnych wartościach.
+
+Z kolei dla zmiennych kategorycznych, takich jak typ budynku, stan mieszkania czy dostępność udogodnień (np. parking czy balkon), wykorzystano metodę Hotdeck. Polega ona na imputacji brakujących wartości na podstawie najbardziej podobnych rekordów w danych, co jest szczególnie skuteczne w przypadku zmiennych o charakterze jakościowym.
+
+Na koniec przeprowadzono analizę braków danych w zbiorze, aby ocenić skuteczność imputacji i upewnić się, że brakujące wartości zostały odpowiednio uzupełnione. Cały proces zakończył się zapisaniem wynikowego zbioru danych do pliku CSV.
+
+Dzięki imputacji, dane stały się kompletne i gotowe do dalszych analiz.
+
+## WIZUALIZACJA DANYCH
+
+Odpowiednio przygotowane dane pozwolą na zilustowanie ich charakterystyk i rozkładów. Poniżej przedstawione zostały wybrane wizualizacje badanych danych
+
+1.  Średnie wartości cen wynajmu w Polsce - mapa
+
+```{r include=FALSE}
+library(dplyr)
+srednie_ceny <- Imputed_Data_Combined %>%
+  group_by(city) %>%
+  summarise(srednie_ceny = mean(price))
+print(srednie_ceny)
+
+install.packages(c("maps", "mapdata", "ggplot2"))
+
+library(maps)
+library(mapdata)
+library(ggplot2)
+```
+
+```{r echo=FALSE}
+poland_map <- map_data("worldHires", region = "Poland")
+
+
+# dane
+cities <- data.frame(
+  city = c("Białystok", "Bydgoszcz", "Częstochowa", "Gdańsk", "Gdynia", "Katowice", "Kraków", "Łódź", "Lublin", "Poznań", "Radom", "Rzeszów", "Szczecin", "Warszawa", "Wrocław"),
+  lon = c(23.1667, 18.0000, 19.1167, 18.6333, 18.5333, 19.0000, 19.9500, 19.4667, 
+          22.5667, 16.9167, 21.1667, 22.0167, 14.5667, 21.0333, 17.0333),
+  lat  = c(53.1333, 53.1167, 50.8000, 54.3667, 54.5333, 50.2500, 50.0500, 51.7833, 
+          51.2333, 52.4167, 51.4000, 50.0500, 53.4333, 52.2000, 51.1167),
+  price = c(1928, 1987, 1915, 3213, 3317, 2411, 3317, 2110, 2570, 2593, 1851, 2521, 2627, 5090, 3172) 
+)
+
+# mapa 
+ggplot() +
+  geom_polygon(data = poland_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "black") +
+  geom_point(data = cities, aes(x = lon, y = lat, size = price), alpha = 0.7, color = "darkmagenta") +  
+  scale_size_continuous(range = c(3, 10)) +  
+  geom_text(data = cities, aes(x = lon, y = lat, label = city), vjust = -1, size = 3, color = "black") +  
+  labs(title = "Średnie ceny wynajmu w Polsce", size = "Cena [PLN]") +
+  theme_minimal()
+```
+
+2.Rozkłady
+
+a)  rozkład liczby pokoi
+
+```{r}
+ ggplot(Imputed_Data_Combined, aes(x = rooms)) +
+    geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
+    labs(title = "Rozkład liczby pokoi",
+         x = "Liczba pokoi", y = "Liczba mieszkań") +
+    theme_minimal()
+```
+
+b)liczba mieszkań z windą i bez windy w różnych miastach
+
+```{r}
+liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
+    group_by(city, hasElevator) %>%
+    summarise(count = n())
+  
+  ggplot(liczba_mieszkan_z_winda, aes(x = reorder(city, count), y = count, fill = hasElevator)) +
+    geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +  
+    labs(title = "Liczba mieszkań z windą i bez windy w różnych miastach",
+         x = "Miasto", y = "Liczba mieszkań") +
+    scale_fill_manual(values = c("thistle", "deeppink4")) +  
+    coord_flip() + 
+    theme_minimal() +
+    theme(
+      legend.position = "top",  
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(size = 14, hjust = 0.5)
+    )
+
+```
+
+c)  Liczba mieszkań w poszczególnych miastach
+
+```{r}
+ liczba_mieszkan <- Imputed_Data_Combined %>%
+    group_by(city) %>%
+    summarise(count = n())
+  
+  
+  ggplot(liczba_mieszkan, aes(x = reorder(city, count), y = count, fill = city)) +
+    geom_bar(stat = "identity", fill = "mediumorchid4", alpha = 0.7) +
+    geom_text(aes(label = count),  
+              vjust = -0.3, size = 3.5) +
+    labs(title = "Liczba mieszkań w poszczególnych miastach",
+         x = "Miasta", y = "Liczba mieszkań") +
+    coord_flip() +  
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.title = element_text(size = 12),
+      plot.title = element_text(size = 14, hjust = 0.5)
+    )
+  
+```
+
+3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
+
+a)Cena wynajmu vs. Odległość od centrum
+
+```{r}
+ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Cena wynajmu vs. Odległość od centrum",
+         x = "Odległość od centrum [km]",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+```
+
+b)Wpływ odległości do szkół na cenę mieszkań
+
+```{r}
+ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
+    geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
+    geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
+    labs(title = "Odległość do szkoły vs. Cena wynajmu",
+         x = "Odległość do szkoły [km]",
+         y = "Cena wynajmu [PLN]") +
+    theme_minimal()
+```
+
+------------------------------------------------------------------------
+
+## ANALIZA OPISOWA
+
+Poniższe dane zawierają analizę opisową dla badanej bazy danych
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = FALSE)
+# pakiety:
+library(dplyr)
+library(ggplot2)
+library(summarytools)
+library(corrplot)
+```
+
+Tabela 1. Podstawowe statystyki opisowe dla kluczowych zmiennych
+
+```{r Podstawowe statystyki opisowe dla kluczowych zmiennych, include=FALSE}
+key_vars <- c("price", "squareMeters", "rooms", "centreDistance", 
+              "schoolDistance", "clinicDistance", "buildYear")
+stats <- Imputed_Data_Combined %>%
+  select(all_of(key_vars)) %>%
+  summarise_all(list(
+    Min = ~ min(., na.rm = TRUE),
+    Max = ~ max(., na.rm = TRUE),
+    Mean = ~ round(mean(., na.rm = TRUE), 2),
+    Median = ~ round(median(., na.rm = TRUE), 2),
+    SD = ~ round(sd(., na.rm = TRUE), 2),
+    Q1 = ~ quantile(., 0.25, na.rm = TRUE),
+    Q3 = ~ quantile(., 0.75, na.rm = TRUE)
+  ))
+
+```
+
+```{r echo=FALSE}
+
+# Wyświetl wyniki
+print(stats)
+
+view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
+```
+
+2.  Szacowanie korelacji dla wybranych danych ilościowych (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
+
+```{r Szacowanie korelacji dla wybranych danych ilościowych, echo=FALSE}
+numeric_vars <- Imputed_Data_Combined %>%
+  select("price","rooms","floor","centreDistance","floorCount","buildYear") %>%
+  na.omit()
+
+cor_matrix <- cor(numeric_vars)
+cor_matrix
+```
+
+3.  Macierzy oszacowanych korelacji
+
+```{r Macierzy oszacowanych korelacji, echo=FALSE}
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
+         tl.col = "black", tl.srt = 45, addCoef.col = "black")
+```
