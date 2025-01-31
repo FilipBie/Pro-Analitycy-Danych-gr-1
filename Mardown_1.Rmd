@@ -4,11 +4,30 @@ author: "Wanesa"
 date: "2025-01-22"
 output: html_document
 ---
+## WALIDACJA DANYCH 
+```{r}
+# Funkcja zamieniająca wszystkie puste wartości na NA
+apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
+
+# Wyświetlenie zaktualizowanego apartments_rent_pl_2024_06frame
+print(apartments_rent_pl_2024_06)
+
+
+library(openxlsx)
+write.xlsx(apartments_rent_pl_2024_06, file = "NaszeDane.xlsx")
+
+# Wczytanie danych
+library(readxl)
+```
+Walidacja danych w analizie to proces sprawdzania poprawności, spójności i kompletności danych przed ich użyciem. Celem jest wykrycie i eliminacja błędów, takich jak duplikaty, brakujące wartości czy nieprawidłowe formaty.
+
+
 WIZUALIZACJA DANCYCH
 
 Odpowiednio przygotowane dane pozwolą na zilustowanie ich charakterystyk i rozkładów. Poniżej przedstawione zostały wybrane wizualizacje badanych danych
 
-1. Średnie wartości cen wynajmu w Polsce - mapa
+1.  Średnie wartości cen wynajmu w Polsce - mapa
+
 ```{r include=FALSE}
 library(dplyr)
 srednie_ceny <- Imputed_Data_Combined %>%
@@ -49,7 +68,8 @@ ggplot() +
 
 2.Rozkłady
 
-a) rozkład liczby pokoi
+a)  rozkład liczby pokoi
+
 ```{r}
  ggplot(Imputed_Data_Combined, aes(x = rooms)) +
     geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
@@ -59,6 +79,7 @@ a) rozkład liczby pokoi
 ```
 
 b)liczba mieszkań z windą i bez windy w różnych miastach
+
 ```{r}
 liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
     group_by(city, hasElevator) %>%
@@ -79,7 +100,8 @@ liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
 
 ```
 
-c) Liczba mieszkań w poszczególnych miastach
+c)  Liczba mieszkań w poszczególnych miastach
+
 ```{r}
  liczba_mieszkan <- Imputed_Data_Combined %>%
     group_by(city) %>%
@@ -103,9 +125,10 @@ c) Liczba mieszkań w poszczególnych miastach
   
 ```
 
-3. ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
+3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
 
 a)Cena wynajmu vs. Odległość od centrum
+
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
@@ -117,6 +140,7 @@ ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
 ```
 
 Wpływ odległości do szkół na cenę mieszkań
+
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
@@ -127,8 +151,8 @@ ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     theme_minimal()
 ```
 
+------------------------------------------------------------------------
 
----
 ANALIZA OPISOWA
 
 Poniższe dane zawierają analizę opisową dla badanej bazy danych
@@ -143,6 +167,7 @@ library(corrplot)
 ```
 
 Tabela 1. Podstawowe statystyki opisowe dla kluczowych zmiennych
+
 ```{r Podstawowe statystyki opisowe dla kluczowych zmiennych, include=FALSE}
 key_vars <- c("price", "squareMeters", "rooms", "centreDistance", 
               "schoolDistance", "clinicDistance", "buildYear")
@@ -159,6 +184,7 @@ stats <- Imputed_Data_Combined %>%
   ))
 
 ```
+
 ```{r echo=FALSE}
 
 # Wyświetl wyniki
@@ -167,8 +193,8 @@ print(stats)
 view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
 ```
 
+2.  Szacowanie korelacji dla wybranych danych ilościowych (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
 
-2. Szacowanie korelacji dla wybranych danych ilościowych (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
 ```{r Szacowanie korelacji dla wybranych danych ilościowych, echo=FALSE}
 numeric_vars <- Imputed_Data_Combined %>%
   select("price","rooms","floor","centreDistance","floorCount","buildYear") %>%
@@ -178,10 +204,9 @@ cor_matrix <- cor(numeric_vars)
 cor_matrix
 ```
 
-3. Macierzy oszacowanych korelacji 
+3.  Macierzy oszacowanych korelacji
+
 ```{r Macierzy oszacowanych korelacji, echo=FALSE}
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
-
-
