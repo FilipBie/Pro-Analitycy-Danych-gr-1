@@ -4,27 +4,252 @@ author: "Wanesa"
 date: "2025-01-22"
 output: html_document
 ---
-<<<<<<< HEAD
-## WALIDACJA DANYCH 
-```{r}
+## ANALIZA BRAKÓW DANYCH
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, include = FALSE)
+#instalacja potrzebnych pakietow/bibliotek
+library(dplyr)
+library(ggplot2)
+library(VIM)
+library(naniar)
+library(Amelia)
+library(mice)
+```
+
+```{r miesieczna migawka ofert wynajmu, echo=FALSE}
+data <- read.csv("apartments_rent_pl_2024_06.csv")
+
+data[data == ""] <- NA   #puste pola zamienione w NA
+
+
+na_counts <- colSums(is.na(data))
+na_counts_df <- as.data.frame(na_counts)
+print(na_counts_df)
+```
+
+Powyzsza tabela przedstawia liczbe brakujacych danych w kazdej z badanych 28 zmiennych. Braki ukazane sa w ujeciu liczbowym. Zdecydowanie najwiecej brakow wystepuje w kolumnie zmiennej o nazwie condition, bo az 6329. Duza liczba brakow wyrozniaja sie takze zmienne: buildingMaterial (3505), buildYear (2249), type(1830) oraz floor(1053). Pozostale zmienne cechuja sie juz znacznie mniejsza liczba brakujacych danych. Pietnascie sposrod badanych zmiennych zawiera kompletne dane.
+
+```{r echo=FALSE}
+n_miss(data)
+n_complete(data)
+
+```
+
+Łączna liczba brakow w calym analizowym zbiorze danych wynosi 15762, natomiast calkowita liczba kompletnych wartosci wynosi 232010. Zatem znaczna wiekszosc wartosci jest nam znana.
+
+```{r tabela podsumowująca liczby i proporcje wartosci NA, echo=FALSE}
+#tabela podsumowująca liczby i proporcje wartosci NA
+miss_var_summary(data) 
+
+```
+
+Powyzsza tabela ukazuje nie tylko wartosci liczbowe brakujacych danych w kazdej zmiennej, ale takze ich proporcje do lacznej sumy obserwacji. Poczawszy od wartosci posiadajac najmniej kompletnych danych.
+
+```{r echo=FALSE}
+table(sapply(data, class))
+```
+
+Najwiecej badanych zmiennych wystepuje w postaci liczb zmiennoprzecinkowych, jest ich 16, kolumn zmiennych w postaci tekstowej jest 10, a zmienna w postaci liczby calkowitej wystepuje tylko raz.
+
+```{r Wizualizacja brakow danych w calym zbiorze, echo=FALSE}
+
+vis_miss(data) +
+  ggtitle("Wizualizacja brakow danych w calym zbiorze")
+```
+
+```{r Wizualizacja brakow danych w poszczegolnych kolumnacjh, echo=FALSE}
+gg_miss_var(data) +
+  ggtitle("Wizualizacja brakow danych w poszczegolnych kolumnach")
+```
+
+```{r Mapa brakow danych, echo=FALSE}
+
+missmap(data, main="Mapa brakow danych")
+
+```
+
+```{r Klasyfikacja brakow danych, echo=FALSE}
+mcar_test(data)
+md.pattern(data)
+aggr_plot <- aggr(data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+
+```{r Analiza wzorcow brakow}
+
+md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
+
+#Outliers w pozniejszym etapie tez o nich nie zapomniec
+```
+
+## Walidacja danych
+
+Przeprowadzono walidację danych dla zbioru `apartments_rent_pl_2024_06`. Zweryfikowano m.in. poprawność wartości liczbowych, spójność danych oraz unikalność wartości w kolumnach kategorycznych.
+
+1.  Zamiana pustych wartości na NA
+
+Wszystkie puste wartości w zbiorze danych zamieniono na `NA`, co ułatwia dalszą analizę.
+
+```{r echo=FALSE}
+
+apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
+
+```
+
+2.  W ramach przeprowadzonej walidacji danych dotyczących mieszkań do wynajęcia w Polsce (zbiór danych `apartments_rent_pl_2024_06`) wykonano szczegółowe sprawdzenie poprawności zakresów i wartości dla czterech kluczowych zmiennych: metrażu (`squareMeters`), liczby pokoi (`rooms`), piętra (`floor`) oraz ceny (`price`). Każda z tych zmiennych została poddana indywidualnej analizie w celu wykrycia potencjalnych błędów lub nieprawidłowości.
+
+```{r echo=FALSE}
+# Podpunkt 3: Walidacja zakresów i wartości
+
+# 3.1 Sprawdzenie, czy 'squareMeters' ma wartości dodatnie
+squareMeters_check <- subset(apartments_rent_pl_2024_06, squareMeters <= 0)
+
+# 3.2 Sprawdzenie, czy 'rooms' ma wartości całkowite i większe od zera
+rooms_check <- subset(apartments_rent_pl_2024_06, rooms <= 0 | rooms %% 1 != 0)
+
+# 3.3 Sprawdzenie, czy 'floor' jest mniejsze lub równe 'floorCount'
+floor_check <- subset(apartments_rent_pl_2024_06, floor > floorCount)
+
+# 3.5 Sprawdzenie, czy 'price' jest liczbą dodatnią
+price_check <- subset(apartments_rent_pl_2024_06, as.numeric(price) <= 0)
+
+# Wyświetlenie wyników walidacji
+list(
+  squareMeters_check = squareMeters_check,
+  rooms_check = rooms_check,
+  floor_check = floor_check,
+  buildYear_check = buildYear_check,
+  price_check = price_check
+)
+```
+
+**Metraż (`squareMeters`)**: Sprawdzono, czy wartości metrażu są dodatnie. W tym celu wyselekcjonowano rekordy, gdzie `squareMeters` było mniejsze lub równe zero. Nie znaleziono żadnych przypadków, co oznacza, że wszystkie mieszkania mają poprawny, dodatni metraż.
+
+**Liczba pokoi (`rooms`)**: Przeanalizowano, czy liczba pokoi jest dodatnią liczbą całkowitą. Wyselekcjonowano rekordy, gdzie `rooms` było mniejsze lub równe zero lub nie było liczbą całkowitą. Nie znaleziono błędów, co potwierdza, że wszystkie wartości liczby pokoi są poprawne.
+
+**Piętro (`floor`)**: Sprawdzono, czy piętro, na którym znajduje się mieszkanie, nie przekracza łącznej liczby pięter w budynku (`floorCount`). Wyselekcjonowano rekordy, gdzie `floor` było większe niż `floorCount`. Nie znaleziono takich przypadków, co wskazuje, że dane dotyczące pięter są spójne.
+
+**Cena (`price`)**: Przeanalizowano, czy ceny mieszkań są dodatnie. Wyselekcjonowano rekordy, gdzie `price` było mniejsze lub równe zero. Nie znaleziono błędów, co potwierdza, że wszystkie ceny są dodatnie.
+
+3.  Sprawdzenie unikalnych wartości dla kolumn kategorycznych
+
+```{r echo=FALSE}
+# Podpunkt 4: Sprawdzenie unikalnych wartości dla kolumn kategorycznych
+
+# 4.1 Sprawdzenie unikalnych wartości w kolumnie 'type'
+unique_types <- unique(apartments_rent_pl_2024_06$type)
+
+# 4.2 Sprawdzenie unikalnych wartości w kolumnie 'ownership'
+unique_ownership <- unique(apartments_rent_pl_2024_06$ownership)
+
+# 4.3 Sprawdzenie unikalnych wartości w kolumnie 'condition'
+unique_condition <- unique(apartments_rent_pl_2024_06$condition)
+
+# 4.4 Sprawdzenie unikalnych wartości w kolumnie 'buildingMaterial'
+unique_buildingMaterial <- unique(apartments_rent_pl_2024_06$buildingMaterial)
+
+# Wyświetlenie wyników
+list(
+  unique_types = unique_types,
+  unique_ownership = unique_ownership,
+  unique_condition = unique_condition,
+  unique_buildingMaterial = unique_buildingMaterial
+)
+```
+
+W kolejnym etapie analizy danych skupiono się na sprawdzeniu unikalnych wartości dla kolumn kategorycznych w zbiorze danych `apartments_rent_pl_2024_06`. Przeanalizowano cztery kolumny: `type`, `ownership`, `condition` oraz `buildingMaterial`.
+
+**Typ nieruchomości (`type`)**: Wyodrębniono unikalne wartości w kolumnie `type`, które określają rodzaj mieszkania. Wynikiem tej operacji jest lista unikalnych kategorii, które występują w danych.
+
+**Forma własności (`ownership`)**: Sprawdzono unikalne wartości w kolumnie `ownership`, które opisują formę własności nieruchomości. Uzyskano listę wszystkich możliwych opcji w tej kategorii.
+
+**Stan nieruchomości (`condition`)**: Przeanalizowano unikalne wartości w kolumnie `condition`, które opisują stan techniczny mieszkania. Wynikiem jest lista dostępnych stanów nieruchomości.
+
+**Materiał budynku (`buildingMaterial`)**: Sprawdzono unikalne wartości w kolumnie `buildingMaterial`, które określają materiał, z którego wykonany jest budynek. Uzyskano listę wszystkich materiałów występujących w danych.
+
+Analiza ta pozwala na lepsze zrozumienie struktury danych oraz identyfikację ewentualnych nieoczekiwanych lub nieprawidłowych kategorii w kolumnach kategorycznych, które w naszym przypadku się nie pojawiły.
+
+## IMPUTACJA BRAKÓW DANYCH
+
+```{r include=FALSE}
+# Wczytaj bibliotekę i dane
+library(readxl)
+library(mice)
+library(VIM)
+```
+
+```{r include=FALSE}
 # Funkcja zamieniająca wszystkie puste wartości na NA
 apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
-# Wyświetlenie zaktualizowanego apartments_rent_pl_2024_06frame
-print(apartments_rent_pl_2024_06)
+# Wczytaj dane z pliku
 
+data <- apartments_rent_pl_2024_06
 
-library(openxlsx)
-write.xlsx(apartments_rent_pl_2024_06, file = "NaszeDane.xlsx")
-
-# Wczytanie danych
-library(readxl)
+# Sprawdź dane
+str(data)
+summary(data)
 ```
-Walidacja danych w analizie to proces sprawdzania poprawności, spójności i kompletności danych przed ich użyciem. Celem jest wykrycie i eliminacja błędów, takich jak duplikaty, brakujące wartości czy nieprawidłowe formaty.
 
-=======
+```{r include=FALSE}
+# Dodanie nowych kolumn do imputacji liczbowej
+num_cols <- c("squareMeters", "floor", "floorCount", "buildYear", "latitude", "longitude", 
+              "pharmacyDistance", "clinicDistance", "postOfficeDistance", 
+              "kindergartenDistance", "restaurantDistance", "collegeDistance")
 
-WIZUALIZACJA DANCYCH
+# Imputacja danych liczbowych przy użyciu MICE
+mice_result <- mice(data[num_cols], m = 5, method = 'pmm', maxit = 5, seed = 123)
+
+
+# Dodanie imputowanych kolumn liczbowych do danych
+data[num_cols] <- complete(mice_result)
+
+# Kolumny kategoryczne do imputacji Hotdeck
+cat_cols <- c("type", "ownership", "buildingMaterial", "condition", "hasParkingSpace", 
+              "hasBalcony", "hasElevator", "hasSecurity", "hasStorageRoom")
+
+# Imputacja danych kategorycznych przy użyciu Hotdeck
+hotdeck_result <- hotdeck(data, variable = cat_cols)
+
+# Dodanie imputowanych kolumn kategorycznych do danych
+data[cat_cols] <- hotdeck_result[cat_cols]
+
+# Sprawdź wynikowe dane
+summary(data)
+
+# Funkcja do sprawdzania braków danych (NA) w każdej kolumnie
+check_na <- function(data) {
+  na_summary <- data.frame(
+    Column = colnames(data),
+    MissingCount = sapply(data, function(x) sum(is.na(x))),
+    TotalRows = nrow(data),
+    MissingPercentage = sapply(data, function(x) round(sum(is.na(x)) / nrow(data) * 100, 2))
+  )
+  return(na_summary)
+}
+
+
+# Wywołanie funkcji dla Twojego zestawu danych
+na_summary <- check_na(data)
+
+# Wyświetlenie wyników
+print(na_summary)
+
+# Zapisz dane do pliku wynikowego
+write.csv(data, "Imputed_Data_Combined.csv", row.names = FALSE)
+```
+
+W projekcie imputacja brakujących danych była kluczowym etapem przygotowania zbioru danych do dalszej analizy. Imputacja jest ważna, ponieważ brakujące dane mogą wprowadzać błędy i utrudniać rzetelne przeprowadzanie analiz. Zamiast ignorować lub usuwać wiersze z brakującymi wartościami, które mogłyby zniekształcić wyniki, zastosowano metodę imputacji, aby zastąpić brakujące wartości oszacowanymi danymi, zachowując spójność i pełność zestawu danych.
+
+Pierwszym krokiem było zamienienie pustych wartości w zbiorze danych na NA, co umożliwiło dalsze operacje imputacyjne. Dla zmiennych liczbowych, takich jak powierzchnia mieszkania, liczba pięter czy odległości do punktów użyteczności publicznej, zastosowano metodę imputacji przy użyciu algorytmu MICE (Multiple Imputation by Chained Equations) i metody pmm (Predictive Mean Matching). Ta technika pozwala na dokładne uzupełnienie brakujących danych na podstawie obserwacji o podobnych wartościach.
+
+Z kolei dla zmiennych kategorycznych, takich jak typ budynku, stan mieszkania czy dostępność udogodnień (np. parking czy balkon), wykorzystano metodę Hotdeck. Polega ona na imputacji brakujących wartości na podstawie najbardziej podobnych rekordów w danych, co jest szczególnie skuteczne w przypadku zmiennych o charakterze jakościowym.
+
+Na koniec przeprowadzono analizę braków danych w zbiorze, aby ocenić skuteczność imputacji i upewnić się, że brakujące wartości zostały odpowiednio uzupełnione. Cały proces zakończył się zapisaniem wynikowego zbioru danych do pliku CSV.
+
+Dzięki imputacji, dane stały się kompletne i gotowe do dalszych analiz.
+
+## WIZUALIZACJA DANYCH
 
 Odpowiednio przygotowane dane pozwolą na zilustowanie ich charakterystyk i rozkładów. Poniżej przedstawione zostały wybrane wizualizacje badanych danych
 
@@ -81,7 +306,6 @@ a)  rozkład liczby pokoi
          x = "Liczba pokoi", y = "Liczba mieszkań") +
     theme_minimal()
 ```
-
 Wykres przedstawia rozkład liczby pokoi w mieszkaniach dostępnych na wynajem. Najwięcej ofert dotyczy mieszkań dwupokojowych, które dominują na rynku, co może wynikać z ich uniwersalności i popularności wśród wynajmujących. Mieszkania jednopokojowe i trzypokojowe stanowią mniejszą, choć znaczną część rynku, sugerując zróżnicowanie potrzeb najemców. Mieszkania cztero- i więcej pokojowe są rzadkością, co może oznaczać ograniczoną dostępność takich lokali lub niski popyt w tej kategorii.
 
 b)liczba mieszkań z windą i bez windy w różnych miastach
@@ -106,11 +330,8 @@ liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
 
 ```
 
-<<<<<<< HEAD
-=======
 Wykres przedstawia liczbę mieszkań z windą i bez windy w różnych miastach Polski. Warszawa wyraźnie dominuje pod względem liczby mieszkań, zarówno z windą, jak i bez niej, co potwierdza jej pozycję największego rynku mieszkaniowego w kraju. Miasta takie jak Kraków, Wrocław czy Łódź mają znaczącą liczbę mieszkań z windą, co świadczy o rozwoju nowoczesnej infrastruktury mieszkaniowej. W mniejszych miastach, takich jak Radom czy Białystok, liczba mieszkań bez windy przeważa, co może wynikać z obecności starszego budownictwa lub mniejszego zapotrzebowania na takie udogodnienia.
 
->>>>>>> 2329a76e42540a703feb54fb5ef246d22b6318f6
 c)  Liczba mieszkań w poszczególnych miastach
 
 ```{r}
@@ -136,13 +357,11 @@ c)  Liczba mieszkań w poszczególnych miastach
   
 ```
 
-<<<<<<< HEAD
-3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
-=======
+3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTURY
+
 Wykres przedstawia liczbę mieszkań dostępnych w poszczególnych miastach Polski. Warszawa zdecydowanie przoduje z liczbą 3393 mieszkań, co pokazuje jej dominującą pozycję na rynku nieruchomości. Kraków zajmuje drugie miejsce z liczbą 1764 mieszkań, a Wrocław trzecie z 879, co odzwierciedla koncentrację ofert w największych aglomeracjach. Mniejsze miasta, takie jak Radom czy Białystok, mają znacznie mniejszą liczbę mieszkań, co może wynikać z ich wielkości, mniejszego zapotrzebowania na wynajem lub mniej rozwiniętego rynku nieruchomości.
 
-3. ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
->>>>>>> 2329a76e42540a703feb54fb5ef246d22b6318f6
+
 
 a)Cena wynajmu vs. Odległość od centrum
 
@@ -155,9 +374,10 @@ ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 ```
+b)Wpływ odległości do szkół na cenę mieszkań
+=======
 Wykres przedstawia zależność między ceną wynajmu a odległością od centrum w kilometrach. Widoczny jest ogólny trend spadkowy – im dalej od centrum, tym niższe ceny wynajmu, co sugeruje, że lokalizacja jest kluczowym czynnikiem wpływającym na koszt wynajmu mieszkania. Wyjątki od tej tendencji, czyli mieszkania o bardzo wysokich cenach w większej odległości od centrum, mogą wynikać z luksusowego standardu lub wyjątkowej lokalizacji. Niemniej jednak większość mieszkań koncentruje się w niższych przedziałach cenowych, co potwierdza, że dystans od centrum pozostaje istotnym determinantem cen.
 
-Wpływ odległości do szkół na cenę mieszkań
 
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
@@ -168,11 +388,17 @@ ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 ```
+
+
+------------------------------------------------------------------------
+
+## ANALIZA OPISOWA
+=======
 Wykres przedstawia zależność między odległością od szkoły a ceną wynajmu mieszkania. Zauważalny jest delikatny trend spadkowy – im większa odległość od szkoły, tym niższe ceny wynajmu, co sugeruje, że bliskość do placówek edukacyjnych może być atutem podnoszącym koszt wynajmu. Najwyższe ceny mieszkań skupiają się w bliskiej odległości od szkół, co może wynikać z preferencji rodzin z dziećmi lub studentów szukających lokum w pobliżu. Jednak dla odległości powyżej 1-2 km różnice cenowe stają się mniej wyraźne, co wskazuje, że wpływ bliskości szkoły jest najsilniejszy w bezpośrednim sąsiedztwie.
 
 ------------------------------------------------------------------------
 
-ANALIZA OPISOWA
+
 
 Poniższe dane zawierają analizę opisową dla badanej bazy danych
 
@@ -183,7 +409,6 @@ library(dplyr)
 library(ggplot2)
 library(summarytools)
 library(corrplot)
-install.packages()
 ```
 
 Tabela 1. Podstawowe statystyki opisowe dla kluczowych zmiennych
@@ -223,6 +448,7 @@ numeric_vars <- Imputed_Data_Combined %>%
 cor_matrix <- cor(numeric_vars)
 cor_matrix
 ```
+
 Kluczowe wnioski:
 
 1. Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza to, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
@@ -234,11 +460,6 @@ Ogólnie analiza wskazuje, że cena wynajmu jest najmocniej powiązana z wielko�
 
 3.  Macierzy oszacowanych korelacji
 
-<<<<<<< HEAD
-3.  Macierzy oszacowanych korelacji
-
-=======
->>>>>>> 2329a76e42540a703feb54fb5ef246d22b6318f6
 ```{r Macierzy oszacowanych korelacji, echo=FALSE}
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
