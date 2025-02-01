@@ -4,7 +4,6 @@ author: "Wanesa"
 date: "2025-01-22"
 output: html_document
 ---
-
 ## ANALIZA BRAKÓW DANYCH
 
 ```{r setup, include=FALSE}
@@ -294,6 +293,8 @@ ggplot() +
   theme_minimal()
 ```
 
+Warszawa wyróżnia się najwyższymi średnimi cenami wynajmu w Polsce, co wynika z jej roli gospodarczego i edukacyjnego centrum kraju. Duże miasta, takie jak Gdańsk, Kraków czy Wrocław, również odnotowują wysokie koszty, głównie ze względu na turystykę i rozwój biznesowy. W mniejszych miastach, takich jak Radom czy Białystok, ceny są znacznie niższe, co może wynikać z mniejszego popytu i ograniczonej urbanizacji.
+
 2.Rozkłady
 
 a)  rozkład liczby pokoi
@@ -305,6 +306,7 @@ a)  rozkład liczby pokoi
          x = "Liczba pokoi", y = "Liczba mieszkań") +
     theme_minimal()
 ```
+Wykres przedstawia rozkład liczby pokoi w mieszkaniach dostępnych na wynajem. Najwięcej ofert dotyczy mieszkań dwupokojowych, które dominują na rynku, co może wynikać z ich uniwersalności i popularności wśród wynajmujących. Mieszkania jednopokojowe i trzypokojowe stanowią mniejszą, choć znaczną część rynku, sugerując zróżnicowanie potrzeb najemców. Mieszkania cztero- i więcej pokojowe są rzadkością, co może oznaczać ograniczoną dostępność takich lokali lub niski popyt w tej kategorii.
 
 b)liczba mieszkań z windą i bez windy w różnych miastach
 
@@ -327,6 +329,8 @@ liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
     )
 
 ```
+
+Wykres przedstawia liczbę mieszkań z windą i bez windy w różnych miastach Polski. Warszawa wyraźnie dominuje pod względem liczby mieszkań, zarówno z windą, jak i bez niej, co potwierdza jej pozycję największego rynku mieszkaniowego w kraju. Miasta takie jak Kraków, Wrocław czy Łódź mają znaczącą liczbę mieszkań z windą, co świadczy o rozwoju nowoczesnej infrastruktury mieszkaniowej. W mniejszych miastach, takich jak Radom czy Białystok, liczba mieszkań bez windy przeważa, co może wynikać z obecności starszego budownictwa lub mniejszego zapotrzebowania na takie udogodnienia.
 
 c)  Liczba mieszkań w poszczególnych miastach
 
@@ -353,7 +357,11 @@ c)  Liczba mieszkań w poszczególnych miastach
   
 ```
 
-3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
+3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTURY
+
+Wykres przedstawia liczbę mieszkań dostępnych w poszczególnych miastach Polski. Warszawa zdecydowanie przoduje z liczbą 3393 mieszkań, co pokazuje jej dominującą pozycję na rynku nieruchomości. Kraków zajmuje drugie miejsce z liczbą 1764 mieszkań, a Wrocław trzecie z 879, co odzwierciedla koncentrację ofert w największych aglomeracjach. Mniejsze miasta, takie jak Radom czy Białystok, mają znacznie mniejszą liczbę mieszkań, co może wynikać z ich wielkości, mniejszego zapotrzebowania na wynajem lub mniej rozwiniętego rynku nieruchomości.
+
+
 
 a)Cena wynajmu vs. Odległość od centrum
 
@@ -366,8 +374,10 @@ ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 ```
-
 b)Wpływ odległości do szkół na cenę mieszkań
+=======
+Wykres przedstawia zależność między ceną wynajmu a odległością od centrum w kilometrach. Widoczny jest ogólny trend spadkowy – im dalej od centrum, tym niższe ceny wynajmu, co sugeruje, że lokalizacja jest kluczowym czynnikiem wpływającym na koszt wynajmu mieszkania. Wyjątki od tej tendencji, czyli mieszkania o bardzo wysokich cenach w większej odległości od centrum, mogą wynikać z luksusowego standardu lub wyjątkowej lokalizacji. Niemniej jednak większość mieszkań koncentruje się w niższych przedziałach cenowych, co potwierdza, że dystans od centrum pozostaje istotnym determinantem cen.
+
 
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
@@ -379,9 +389,16 @@ ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     theme_minimal()
 ```
 
+
 ------------------------------------------------------------------------
 
 ## ANALIZA OPISOWA
+=======
+Wykres przedstawia zależność między odległością od szkoły a ceną wynajmu mieszkania. Zauważalny jest delikatny trend spadkowy – im większa odległość od szkoły, tym niższe ceny wynajmu, co sugeruje, że bliskość do placówek edukacyjnych może być atutem podnoszącym koszt wynajmu. Najwyższe ceny mieszkań skupiają się w bliskiej odległości od szkół, co może wynikać z preferencji rodzin z dziećmi lub studentów szukających lokum w pobliżu. Jednak dla odległości powyżej 1-2 km różnice cenowe stają się mniej wyraźne, co wskazuje, że wpływ bliskości szkoły jest najsilniejszy w bezpośrednim sąsiedztwie.
+
+------------------------------------------------------------------------
+
+
 
 Poniższe dane zawierają analizę opisową dla badanej bazy danych
 
@@ -431,6 +448,15 @@ numeric_vars <- Imputed_Data_Combined %>%
 cor_matrix <- cor(numeric_vars)
 cor_matrix
 ```
+
+Kluczowe wnioski:
+
+1. Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza to, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
+2. Wyraźna dodatnia korelacja między liczbą pięter w budynku a piętrem mieszkania (0.67): Wskazuje na logiczną zależność – wyższe mieszkania częściej znajdują się w budynkach o większej liczbie pięter.
+3. Brak istotnej korelacji między odległością od centrum a ceną (-0.01): Oznacza, że w analizowanym zestawie danych lokalizacja względem centrum nie wpływa znacząco na cenę wynajmu.
+4. Słaba lub ujemna korelacja roku budowy z innymi zmiennymi: Budynki starsze są częściej związane z niższą liczbą pięter oraz ceną, jednak wartości korelacji (-0.02 do 0.15) są zbyt niskie, aby mówić o wyraźnym trendzie.
+
+Ogólnie analiza wskazuje, że cena wynajmu jest najmocniej powiązana z wielkością mieszkania (liczbą pokoi), natomiast lokalizacja i inne czynniki mają słabszy wpływ.
 
 3.  Macierzy oszacowanych korelacji
 
