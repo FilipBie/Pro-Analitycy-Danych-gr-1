@@ -23,6 +23,7 @@ plot(model_2$residuals)
 library(car)
 vif(model_2)
 
+library(lmtest)             
 bptest(model_2)
 
 qqnorm(residuals(model_2))
