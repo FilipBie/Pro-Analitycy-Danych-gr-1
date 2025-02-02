@@ -534,6 +534,102 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
 
+# Model wyjaśniający cenę miesięcznego wynajmu mieszkania
+
+W analizie wykorzystano model regresji liniowej, aby zbadać czynniki wpływające na cenę wynajmu mieszkań w 15 największych miastach. Do modelu włączono kluczowe zmienne, które potencjalnie mogą wpływać na cenę wynajmu, takie jak:
+
+- avg_price: Średnia cena nieruchomości w danym mieście, która odzwierciedla ogólną sytuację na rynku nieruchomości w danym regionie.
+- type: Typ budynku (dom, blok mieszkalny, kamienica), który może wpływać na atrakcyjność nieruchomości.
+- squareMeters: Metraż mieszkania, jako miara jego wielkości i przestrzeni użytkowej.
+- rooms: Liczba pokoi, która jest istotna dla rodzin lub osób poszukujących większych mieszkań.
+- buildYear: Rok budowy, który może wskazywać na stan techniczny nieruchomości oraz jej nowoczesność.
+- centreDistance: Odległość od centrum miasta, która jest kluczowa dla lokalizacji i dostępności do głównych atrakcji miejskich.
+- poiCount: Liczba punktów zainteresowania (szkoły, przychodnie, sklepy, restauracje) w promieniu 500 metrów, co wpływa na jakość życia w okolicy.
+- schoolDistance: Odległość do najbliższej szkoły, która może być istotna dla rodzin z dziećmi.
+- hasElevator: Obecność windy, która zwiększa komfort, szczególnie w wyższych budynkach.
+
+Te zmienne zostały wybrane, ponieważ są powszechnie uznawane za istotne czynniki wpływające na wartość nieruchomości na rynku wynajmu. Analiza ma na celu zrozumienie, jak każdy z tych czynników wpływa na cenę wynajmu oraz które z nich mają największe znaczenie dla potencjalnych najemców.
+
+```{r echo=FALSE}
+city_avg_prices <- Imputed_Data_Combined %>%
+  group_by(city) %>%
+  summarise(avg_price = mean(price, na.rm = TRUE))
+
+Imputed_Data_Combined$avg_price <- city_avg_prices$avg_price[match(Imputed_Data_Combined$city, city_avg_prices$city)]
+
+model_2 <- lm(formula = log(price) ~ avg_price + type + squareMeters + rooms + buildYear + centreDistance + poiCount + schoolDistance + hasElevator, data = Imputed_Data_Combined)
+summary(model_2)
+```
+
+Wyniki modelu regresji liniowej pokazują, że zmienna zależna, logarytm ceny nieruchomości, jest wyjaśniana przez szereg istotnych statystycznie zmiennych niezależnych. Model ma bardzo dobre dopasowanie do danych, o czym świadczy wysoki współczynnik determinacji (R-squared = 0.8008), co oznacza, że około 80% zmienności logarytmu ceny nieruchomości jest wyjaśniane przez uwzględnione w modelu zmienne. Test F-statystyki (F-statistic = 3552, p < 2.2e-16) wskazuje, że model jako całość jest statystycznie istotny.
+
+Reszty modelu są symetrycznie rozłożone wokół zera (mediana bliska 0), ale występują niewielkie odstępstwa na krańcach (wartości skrajne od -1.5701 do 0.7970). Błąd standardowy reszt (Residual standard error = 0.2164) wskazuje, że średni błąd przewidywania logarytmu ceny wynosi 0.2164.
+
+Należy jednak pamiętać, że współczynniki w modelu są zlogarytmowane, co utrudnia ich bezpośrednią interpretację. Aby ułatwić interpretację, należy je przekształcić za pomocą funkcji wykładniczej, co pozwoli wyrazić je jako procentową zmianę ceny nieruchomości.
+
+```{r echo=FALSE}
+interpretable_coefs <- exp(coef(model_2)) - 1
+
+interpretable_coefs
+```
+
+Wyniki przekształconych współczynników modelu regresji liniowej, uzyskane za pomocą funkcji wykładniczej (exp(coef(model_2)) - 1), pozwalają na bardziej intuicyjną interpretację wpływu poszczególnych zmiennych na cenę nieruchomości.
+
+Interpretacja przekształconych współczynników:
+
+1. Intercept: Wartość 43.3057 oznacza, że gdy wszystkie zmienne niezależne są równe zero, cena nieruchomości jest około 43.31% wyższa od wartości bazowej. Jest to wartość referencyjna, która nie ma bezpośredniej interpretacji w kontekście zmiennych, ale służy jako punkt wyjścia dla modelu.
+
+2. avg_price: Współczynnik 0.0002012 wskazuje, że wzrost średniej ceny w mieście o 1 jednostkę wiąże się z 0.02% wzrostem ceny nieruchomości. Choć efekt jest niewielki, jest istotny statystycznie.
+
+3. typeblockOfFlats: Współczynnik -0.1012 oznacza, że nieruchomości typu "blok mieszkalny" są średnio 10.12% tańsze niż domy (kategoria referencyjna).
+
+4. typetenement: Współczynnik -0.0471 sugeruje, że kamienice są średnio 4.71% tańsze niż domy.
+
+5. squareMeters: Współczynnik 0.0118 wskazuje, że każdy dodatkowy metr kwadratowy powierzchni zwiększa cenę nieruchomości o 1.18%.
+
+6. rooms: Współczynnik 0.0534 oznacza, że każda dodatkowa liczba pokoi wiąże się ze wzrostem ceny o 5.34%.
+
+7. buildYear: Współczynnik 0.0014 sugeruje, że każdy dodatkowy rok budowy (nowsze nieruchomości) wiąże się ze wzrostem ceny o 0.14%.
+
+8. centreDistance: Współczynnik -0.0273 oznacza, że każda dodatkowa jednostka odległości od centrum miasta wiąże się ze spadkiem ceny o 2.73%.
+
+9. poiCount: Współczynnik 0.00098 wskazuje, że każdy dodatkowy punkt zainteresowania (POI) w okolicy wiąże się ze wzrostem ceny o 0.098%.
+
+10. schoolDistance: Współczynnik 0.0568 sugeruje, że każda dodatkowa jednostka odległości do szkoły wiąże się ze wzrostem ceny o 5.68%. Ten wynik może wydawać się kontrintuicyjny i wymaga dalszej analizy, aby zrozumieć, dlaczego większa odległość do szkoły zwiększa cenę.
+
+11. hasElevatoryes: Współczynnik 0.0506 oznacza, że obecność windy w budynku wiąże się ze wzrostem ceny o 5.06%.
+
+
+```{r echo=FALSE}
+plot(model_2$residuals)
+```
+
+Analiza reszt modelu regresyjnego dostarcza istotnych informacji na temat jego jakości i zgodności z założeniami. Wykres przedstawiający reszty względem indeksu obserwacji pokazuje, że większość wartości rozkłada się wokół zera, co sugeruje brak silnych trendów. Niemniej jednak, zauważalne są pewne wartości odstające, szczególnie w dolnej części wykresu. Brak wyraźnego wzorca w resztach sugeruje, że założenie homoscedastyczności może być spełnione, ale wymaga to dodatkowej weryfikacji testem statystycznym.
+
+```{r echo=FALSE}
+library(car)
+vif(model_2)
+```
+
+Analiza współczynników inflacji wariancji (VIF) wskazuje, że nie występuje istotny problem współliniowości pomiędzy zmiennymi niezależnymi. Wszystkie wartości VIF są poniżej progu krytycznego (5), co oznacza, że zmienne nie są nadmiernie skorelowane. Najwyższe wartości uzyskano dla zmiennych "squareMeters" (4.014) oraz "rooms" (3.836), co sugeruje pewną współliniowość, ale nie na poziomie wymagającym natychmiastowej interwencji.
+
+```{r echo=FALSE}
+library(lmtest)             
+bptest(model_2)
+```
+
+Wynik testu Breuscha-Pagana, który sprawdza homoscedastyczność reszt, wskazuje na istotny problem z niejednorodnością wariancji. Bardzo niska wartość p (< 2.2e-16) sugeruje, że wariancja reszt nie jest stała, co może negatywnie wpływać na jakość oszacowań parametrów modelu.
+
+```{r echo=FALSE}
+qqnorm(residuals(model_2))
+qqline(residuals(model_2), col = "red")
+```
+
+Wykres kwantyl-kwantyl (Q-Q plot) pozwala ocenić normalność rozkładu reszt. Idealnie dopasowane reszty powinny układać się wzdłuż czerwonej linii, co oznaczałoby zgodność z rozkładem normalnym. W tym przypadku widoczne są pewne odchylenia, szczególnie na krańcach wykresu, gdzie wartości odstające powodują rozproszenie punktów. Może to sugerować istnienie skośności w rozkładzie reszt, co może wpłynąć na interpretację wyników modelu oraz testów statystycznych. W przypadku tego modelu może to sugerować, że część danych dotyczyła wynajmu pokojów, co wpłynęło na występowanie bardzo niskich wartości. Analogicznie w zbiorze danych występują także bardzo drogie mieszkania na wynajem na cenę których może wpływać ich status „premium”.
+
+Podsumowując, model wykazuje pewne nieprawidłowości, takie jak heteroskedastyczność oraz lekkie odchylenie reszt od normalności, co może wpływać na jego trafność. Jednak nasz model ma na celu poglądowe wytłumaczenie ceny wynajmu mieszkań.
+
+
 # TEST NORMALNOŚCI ROZKŁADU
 
 W celu dokonania testu normalności rozkładu dla zmiennych ilościowych, z badanych danych, zastosujemy test normalności rozkładu Andersona-Darlinga. Test ten został wybrany ze względu na jego wysoką czułość w wykrywaniu odchyleń od normalności, szczególnie w przypadku dużych prób.
@@ -639,3 +735,16 @@ print(chi_result)
 ```
 
 Analiza wyników testu Chi-kwadrat pokazuje, że nie ma istotnej statystycznie zależności między stanem technicznym nieruchomości (low i premium) a jej kategorią cenową (Niskie, Średnie, Wysokie). Oznacza to, że stan techniczny nie wpływa znacząco na poziom cen – **nieruchomości w różnym stanie mogą znajdować się w podobnych przedziałach cenowych**.
+
+
+#Podsumowanie analizy
+
+W ramach projektu dokonano analizy zbioru danych, zawierającego informacje o wynajmie mieszkań w piętnastu największych miastach w Polsce (stan na czerwiec 2024). Celem badania było zidentyfikowanie kluczowych zależności między zmiennymi, a także określenie, które czynniki w największych stopniu determinują wysokość czynszu. Pierwszym etapem projektu było wstępne przetworzenie i eksploracja danych. Rozpoczęto od identyfikacji braków danych oraz wskazania wartości odstających. Kolejnym krokiem była walidacja danych, po której przystąpiono do zastosowania metod imputacji, aby zapewnić kompletność i spójność analizowanego zbioru. Zastosowanymi technikami imputacji były: algorytm MICE i metoda Hotdeck. Kolejny etap projektu obejmował wizualizację danych, mającą charakter czysto podglądowy. Następnie przystąpiono do analizy opisowej, aby lepiej zrozumieć badane dane oraz korelacje zachodzące między nimi. Przeprowadzono analizę korelacji między ceną najmu a innymi zmiennymi, w tym liczbą pokoi, rokiem budowy, odległością od centrum oraz bliskością placówek edukacyjnych.
+
+W celu pogłębienia analizy zbudowano model regresji liniowej, w którym zmienną zależną była cena najmu, a zmiennymi niezależnymi kluczowe czynniki, takie jak średnia cena w mieście, typ budynku, metraż, liczba pokoi, rok budowy, odległość od centrum, liczba punktów zainteresowania w okolicy, odległość do szkoły oraz obecność windy. Model wykazał bardzo dobre dopasowanie do danych, a wszystkie zmienne były statystycznie istotne. Miał on jednak problem z heteroskedastycznością oraz rozkładem reszt, dlatego jest tylko modelem poglądowym.
+
+W ramach dalszych analiz sprawdzono normalność rozkładu danych oraz przeprowadzono testy statystyczne.
+
+Otrzymane wyniki mogą stanowić solidną podstawę do dalszych badań oraz wspierać proces podejmowania decyzji na rynku nieruchomości, zarówno od strony wynajmującego, jak i najemcy.
+
+
