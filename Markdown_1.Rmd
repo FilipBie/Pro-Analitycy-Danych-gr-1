@@ -218,7 +218,7 @@ W kolejnym etapie analizy danych skupiono się na sprawdzeniu unikalnych wartoś
 
 Analiza ta pozwala na lepsze zrozumienie struktury danych oraz identyfikację ewentualnych nieoczekiwanych lub nieprawidłowych kategorii w kolumnach kategorycznych, które w naszym przypadku się nie pojawiły.
 
-## IMPUTACJA BRAKÓW DANYCH
+# IMPUTACJA BRAKÓW DANYCH
 
 ```{r include=FALSE}
 library(readxl)
@@ -289,7 +289,7 @@ Na koniec przeprowadzono analizę braków danych w zbiorze, aby ocenić skuteczn
 
 Dzięki imputacji, dane stały się kompletne i gotowe do dalszych analiz.
 
-## WIZUALIZACJA DANYCH
+# WIZUALIZACJA DANYCH
 
 Odpowiednio przygotowane dane pozwolą na zilustowanie ich charakterystyk i rozkładów. Poniżej przedstawione zostały wybrane wizualizacje badanych danych
 
@@ -512,7 +512,9 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
 
-# Model wyjaśniający cenę miesięcznego wynajmu mieszkania
+# MODEL
+
+## Model wyjaśniający cenę miesięcznego wynajmu mieszkania
 
 W analizie wykorzystano model regresji liniowej, aby zbadać czynniki wpływające na cenę wynajmu mieszkań w 15 największych miastach. Do modelu włączono kluczowe zmienne, które potencjalnie mogą wpływać na cenę wynajmu, takie jak:
 
@@ -606,10 +608,9 @@ Wykres kwantyl-kwantyl (Q-Q plot) pozwala ocenić normalność rozkładu reszt. 
 
 Podsumowując, model wykazuje pewne nieprawidłowości, takie jak heteroskedastyczność oraz lekkie odchylenie reszt od normalności, co może wpływać na jego trafność. Jednak nasz model ma na celu poglądowe wytłumaczenie ceny wynajmu mieszkań.
 
-
 # TESTY
 
-## TEST NORMALNOŚCI ROZKŁADU
+## Test normalności rozkładu
 
 W celu dokonania testu normalności rozkładu dla zmiennych ilościowych, z badanych danych, zastosujemy test normalności rozkładu Andersona-Darlinga. Test ten został wybrany ze względu na jego wysoką czułość w wykrywaniu odchyleń od normalności, szczególnie w przypadku dużych prób.
 
