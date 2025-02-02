@@ -1,13 +1,20 @@
 ---
-title: "Analiza opisowa"
-author: "Wanesa"
+title: "Raport"
+author: "Wanesa Konkel, Ada Kluk, Filip Bieszke, Sebastian Gębczyk"
 date: "2025-01-22"
 output: html_document
 ---
 
 # WSTĘP
 
-Rynek nieruchomości jest jednym z kluczowych obszarów, w których analityka danych znajduje szerokie zastosowanie. W ramach tego projektu analizujemy dane dotyczące wynajmu mieszkań w różnych miastach, aby zidentyfikować kluczowe czynniki wpływające na wysokość czynszu oraz przewidywać ceny wynajmu na podstawie dostępnych informacji.
+Rynek nieruchomości jest jednym z kluczowych obszarów, w których analityka danych znajduje szerokie zastosowanie. W ramach tego raportu zostaną przeanalizowane dane dotyczące wynajmu mieszkań w różnych miastach, aby zidentyfikować kluczowe czynniki wpływające na wysokość czynszu oraz przewidywać ceny wynajmu na podstawie dostępnych informacji.
+
+## Import danych
+
+```{r include=FALSE}
+data <- read.csv("apartments_rent_pl_2024_06.csv")
+
+```
 
 ## Opis danych
 
@@ -37,7 +44,6 @@ library(mice)
 # ANALIZA BRAKÓW DANYCH
 
 ```{r miesieczna migawka ofert wynajmu, echo=FALSE}
-data <- read.csv("apartments_rent_pl_2024_06.csv")
 
 data[data == ""] <- NA   #puste pola zamienione w NA
 
@@ -87,18 +93,18 @@ gg_miss_var(data) +
 missmap(data, main="Mapa brakow danych")
 
 ```
+
 Przedstawione wizualizacje ukazują rozkłady brakujących wartości w analizowanym zbiorze danych. Z analizy wynika, że ogólny poziom braków danych wynosi około 6%, co oznacza, że większość obserwacji jest kompletna (94%). Braki są nierównomiernie rozłożone w poszczególnych zmiennych – najwięcej niepełnych danych obserwujemy w zmiennych "condition", "buildYear", "floor", "floorCount" oraz "restaurantDistance".
 
 Takie braki mogą wynikać z kilku czynników, np. niekompletnych wpisów w bazach danych, błędów w rejestracji informacji czy nieobowiązkowego charakteru niektórych pól. Warto zauważyć, że zmienne geograficzne, takie jak "longitude" i "city", są w pełni wypełnione, co sugeruje, że informacje lokalizacyjne są dobrze udokumentowane.
 
 Możliwe metody radzenia sobie z brakami obejmują imputację wartości, co zostanie opisane w dalszej części raportu.
 
-
 # WARTOŚCI ODSTAJĄCE
 
 ```{r include=FALSE}
 # SPRAWDZENIE WARTOŚCI ODSTAJĄCYCH DLA WSZYSTKICH ZMIENNYCH 
-apartments_rent <- Imputed_Data_Combined
+apartments_rent <- data
 
 boxplot(apartments_rent$buildYear, main = "buildYear")
 
@@ -153,7 +159,7 @@ Przeprowadzono walidację danych dla zbioru `apartments_rent_pl_2024_06`. Zweryf
 Wszystkie puste wartości w zbiorze danych zamieniono na `NA`, co ułatwia dalszą analizę.
 
 ```{r include=FALSE}
-
+apartments_rent_pl_2024_06 <- data
 apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
 ```
@@ -298,6 +304,7 @@ print(na_summary)
 
 # Zapisz dane do pliku wynikowego
 write.csv(data, "Imputed_Data_Combined.csv", row.names = FALSE)
+Imputed_Data_Combined <- read.csv("Imputed_Data_Combined.csv")
 ```
 
 W projekcie imputacja brakujących danych była kluczowym etapem przygotowania zbioru danych do dalszej analizy. Imputacja jest ważna, ponieważ brakujące dane mogą wprowadzać błędy i utrudniać rzetelne przeprowadzanie analiz. Zamiast ignorować lub usuwać wiersze z brakującymi wartościami, które mogłyby zniekształcić wyniki, zastosowano metodę imputacji, aby zastąpić brakujące wartości oszacowanymi danymi, zachowując spójność i pełność zestawu danych.
@@ -314,7 +321,7 @@ Dzięki imputacji, dane stały się kompletne i gotowe do dalszych analiz.
 
 Odpowiednio przygotowane dane pozwolą na zilustowanie ich charakterystyk i rozkładów. Poniżej przedstawione zostały wybrane wizualizacje badanych danych
 
-1.  Średnie wartości cen wynajmu w Polsce - mapa
+1.  **Średnie wartości cen wynajmu w Polsce - mapa**
 
 ```{r include=FALSE}
 library(dplyr)
@@ -356,7 +363,7 @@ ggplot() +
 
 Warszawa wyróżnia się najwyższymi średnimi cenami wynajmu w Polsce, co wynika z jej roli gospodarczego i edukacyjnego centrum kraju. Duże miasta, takie jak Gdańsk, Kraków czy Wrocław, również odnotowują wysokie koszty, głównie ze względu na turystykę i rozwój biznesowy. W mniejszych miastach, takich jak Radom czy Białystok, ceny są znacznie niższe, co może wynikać z mniejszego popytu i ograniczonej urbanizacji.
 
-2.  Rozkłady
+2.  **Rozkłady**
 
 <!-- -->
 
@@ -421,7 +428,7 @@ c)  Liczba mieszkań w poszczególnych miastach
   
 ```
 
-3.  Analiza dostępności infrastruktury
+3.  **Analiza dostępności infrastruktury**
 
 Wykres przedstawia liczbę mieszkań dostępnych w poszczególnych miastach Polski. Warszawa zdecydowanie przoduje z liczbą 3393 mieszkań, co pokazuje jej dominującą pozycję na rynku nieruchomości. Kraków zajmuje drugie miejsce z liczbą 1764 mieszkań, a Wrocław trzecie z 879, co odzwierciedla koncentrację ofert w największych aglomeracjach. Mniejsze miasta, takie jak Radom czy Białystok, mają znacznie mniejszą liczbę mieszkań, co może wynikać z ich wielkości, mniejszego zapotrzebowania na wynajem lub mniej rozwiniętego rynku nieruchomości.
 
@@ -470,7 +477,7 @@ library(summarytools)
 library(corrplot)
 ```
 
-1.  Podstawowe statystyki opisowe dla kluczowych zmiennych
+1.  **Podstawowe statystyki opisowe dla kluczowych zmiennych**
 
 ```{r Podstawowe statystyki opisowe dla kluczowych zmiennych, include=FALSE}
 key_vars <- c("price", "squareMeters", "rooms", "centreDistance", 
@@ -497,7 +504,7 @@ stats <- Imputed_Data_Combined %>%
 view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
 ```
 
-2.  Szacowanie korelacji dla wybranych danych ilościowych (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
+2.  **Szacowanie korelacji dla wybranych danych ilościowych** (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
 
 ```{r Szacowanie korelacji dla wybranych danych ilościowych, echo=FALSE}
 numeric_vars <- Imputed_Data_Combined %>%
@@ -510,14 +517,14 @@ cor_matrix
 
 Kluczowe wnioski:
 
--   Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza to, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
+-   Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
 -   Wyraźna dodatnia korelacja między liczbą pięter w budynku a piętrem mieszkania (0.67): Wskazuje na logiczną zależność – wyższe mieszkania częściej znajdują się w budynkach o większej liczbie pięter.
 -   Brak istotnej korelacji między odległością od centrum a ceną (-0.01): Oznacza, że w analizowanym zestawie danych lokalizacja względem centrum nie wpływa znacząco na cenę wynajmu.
 -   Słaba lub ujemna korelacja roku budowy z innymi zmiennymi: Budynki starsze są częściej związane z niższą liczbą pięter oraz ceną, jednak wartości korelacji (-0.02 do 0.15) są zbyt niskie, aby mówić o wyraźnym trendzie.
 
 Ogólnie analiza wskazuje, że cena wynajmu jest najmocniej powiązana z wielkością mieszkania (liczbą pokoi), natomiast lokalizacja i inne czynniki mają słabszy wpływ.
 
-3.  Macierzy oszacowanych korelacji
+3.  **Macierzy oszacowanych korelacji**
 
 W celu lepszej wizualizacji wniosków, poniżej przedstawiona została macierz korelacji:
 
@@ -526,3 +533,109 @@ library(corrplot)
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
+
+# TEST NORMALNOŚCI ROZKŁADU
+
+W celu dokonania testu normalności rozkładu dla zmiennych ilościowych, z badanych danych, zastosujemy test normalności rozkładu Andersona-Darlinga. Test ten został wybrany ze względu na jego wysoką czułość w wykrywaniu odchyleń od normalności, szczególnie w przypadku dużych prób.
+
+**Hipoteza zerowa (H₀)**: Dane posiadają rozkład normalny.
+
+**Hipoteza alternatywna (H₁)**: Dane nie posiadają rozkładu normalnego.
+
+```{r echo=FALSE}
+imputed_data_combined_numeric <- Imputed_Data_Combined[, sapply(Imputed_Data_Combined, is.numeric)]
+
+# Instalacja i załadowanie pakietu nortest (jeżeli nie jest zainstalowany)
+if (!require(nortest)) install.packages("nortest")
+library(nortest)
+
+# Test Andersona-Darlinga dla każdej zmiennej numerycznej
+ad_results <- apply(imputed_data_combined_numeric, 2, function(x) ad.test(x)$p.value)
+
+# Wyniki testu Andersona-Darlinga
+print(ad_results)
+```
+
+Dla wszystkich analizowanych zmiennych numerycznych otrzymaliśmy bardzo niskie wartości, znacznie poniżej przyjętego poziomu istotności α = 0.05. Należy Odrzucić hipotezę zerową, na rzecz hipotezy alternatywnej - Dane nie posiadają rozkładu normalnego, więc do dalszej analizy wybieramy test Kruskala-Wallisa dla zmiennej 'price' względem 'type'.
+
+**Hipoteza zerowa (H₀)**: Mediany cen nieruchomości w różnych typach budynków są takie same.
+
+**Hipoteza alternatywna (H₁)**: Istnieją istotne statystycznie różnice w medianie cen nieruchomości w zależności od typu budynku.
+
+## Test Kruskala-Wallisa dla zmiennej 'price' względem 'type'
+
+```{r echo=FALSE}
+if (!requireNamespace("ggstatsplot", quietly = TRUE)) {
+  install.packages("ggstatsplot")
+}
+library(ggstatsplot)
+
+
+# Test Kruskala-Wallisa dla zmiennej 'price' względem 'type'
+kruskal_result <- kruskal.test(price ~ type, data = Imputed_Data_Combined)
+```
+
+## Wizualizacja testu Kruskala-Wallisa
+
+```{r echo=FALSE}
+# Wizualizacja wyników testu Kruskala-Wallisa
+p <- ggbetweenstats(
+  data = Imputed_Data_Combined,
+  x = type,               # Zmienna grupująca
+  y = price,              # Zmienna numeryczna
+  type = "nonparametric", # Test nieparametryczny
+  title = "Porównanie cen (price) w różnych typach nieruchomości",
+  xlab = "Typ nieruchomości",
+  ylab = "Cena",
+  results.subtitle = TRUE, # Wyświetlenie wyników testu na wykresie
+  mean.plotting = TRUE     # Wyświetlenie średniej na wykresie
+)
+
+# Wyświetlenie wykresu
+print(p)
+```
+
+Na podstawie przeprowadzonego testu Kruskala-Wallisa dla zmiennej price względem zmiennej type uzyskano wynik, w którym statystyka chi-kwadrat wynosi 740.19 przy 2 stopniach swobody, a wartość p jest ekstremalnie niska (p = 1.86e−161). Takie wartość p wskazuje na podstawe do odrzucenia hipotezy zerowej, co oznacza, że istnieją istotne statystycznie różnice w medianach cen nieruchomości pomiędzy różnymi typami nieruchomości.
+
+Wykres ilustruje te różnice, pokazując mediany cen dla trzech typów nieruchomości: apartmentBuilding (3500), blockOfFlats (2700) oraz tenement (3200). Widoczna jest wyraźna różnica w poziomie cen pomiędzy tymi kategoriami. Dodatkowo, przeprowadzone testy post-hoc Dunn'a z korektą Holm'a potwierdzają istotność różnic pomiędzy parami grup (p \< 0.05 dla wszystkich porównań), co wskazuje, że każda z grup różni się istotnie od pozostałych pod względem mediany ceny.
+
+Wyniki przeprowadzonego testu sugerują, że **typ nieruchomości ma istotny wpływ na poziom cen.** Najwyższe ceny obserwujemy w przypadku apartment buildings, podczas gdy block of flats cechują się najniższymi medianami cen. W związku z tym można stwierdzić, że rynek nieruchomości różnicuje ceny w zależności od typu budynku
+
+## Test Chi-kwadrat dla zmiennej 'condition' względem 'price'
+
+W dalszej części zbadano czy istnieje, istotna statystycznie, zależność pomiędzy stanem technicznym nieruchomości (condition) a jej ceną (price). W tym celu wykorzystano test Chi-kwadrat, który pozwala ocenić, czy rozkład cen nieruchomości (podzielonych na kategorie: niskie, średnie, wysokie) jest zależny od stanu technicznego budynku. Analiza ta pozwoli określić, czy lepszy stan techniczny przekłada się na wyższe ceny, czy też nie ma istotnego wpływu. Dodatkowo wyniki zostaną zobrazowane na wykresie, co ułatwi interpretację zależności pomiędzy analizowanymi zmiennymi.
+
+```{r echo=FALSE}
+# Podział zmiennej 'price' na 3 kategorie: niskie, średnie, wysokie
+Imputed_Data_Combined$price_category <- cut(
+  Imputed_Data_Combined$price,
+  breaks = quantile(Imputed_Data_Combined$price, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE),
+  labels = c("Niskie", "Średnie", "Wysokie"),
+  include.lowest = TRUE
+)
+# Tabela kontyngencji dla 'price_category' i 'condition'
+table_chi <- table(Imputed_Data_Combined$price_category, Imputed_Data_Combined$condition)
+print(table_chi)
+
+# Test Chi-kwadrat
+chi_result <- chisq.test(table_chi)
+```
+
+## Wizualizacja testu Chi-kwadrat
+
+```{r echo=FALSE}
+# Wizualizacja wyników testu Chi-kwadrat
+library(ggplot2)
+ggplot(Imputed_Data_Combined, aes(x = condition, fill = price_category)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Rozkład kategorii cen w zależności od stanu technicznego nieruchomości",
+    x = "Stan techniczny",
+    y = "Proporcja",
+    fill = "Kategoria ceny"
+  ) +
+  theme_minimal()
+print(chi_result)
+```
+
+Analiza wyników testu Chi-kwadrat pokazuje, że nie ma istotnej statystycznie zależności między stanem technicznym nieruchomości (low i premium) a jej kategorią cenową (Niskie, Średnie, Wysokie). Oznacza to, że stan techniczny nie wpływa znacząco na poziom cen – **nieruchomości w różnym stanie mogą znajdować się w podobnych przedziałach cenowych**.
