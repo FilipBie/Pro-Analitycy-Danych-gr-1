@@ -5,7 +5,6 @@ model <-lm(formula = log(price)~  squareMeters + floor + buildYear, data = dane_
 
 summary(model)
 
-
 #model 2
 
 library(dplyr)
