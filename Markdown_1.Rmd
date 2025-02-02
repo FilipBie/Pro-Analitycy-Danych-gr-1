@@ -43,7 +43,7 @@ library(mice)
 
 # ANALIZA BRAKÓW DANYCH
 
-```{r miesieczna migawka ofert wynajmu, echo=FALSE}
+```{r miesieczna migawka ofert wynajmu, echo=FALSE, include=TRUE}
 
 data[data == ""] <- NA   #puste pola zamienione w NA
 
@@ -55,7 +55,7 @@ print(na_counts_df)
 
 Powyzsza tabela przedstawia liczbe brakujacych danych w kazdej z badanych 28 zmiennych. Braki ukazane sa w ujeciu liczbowym. Zdecydowanie najwiecej brakow wystepuje w kolumnie zmiennej o nazwie condition, bo az 6329. Duza liczba brakow wyrozniaja sie takze zmienne: buildingMaterial (3505), buildYear (2249), type(1830) oraz floor(1053). Pozostale zmienne cechuja sie juz znacznie mniejsza liczba brakujacych danych. Pietnascie sposrod badanych zmiennych zawiera kompletne dane.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 n_miss(data)
 n_complete(data)
 
@@ -63,7 +63,7 @@ n_complete(data)
 
 Łączna liczba brakow w calym analizowym zbiorze danych wynosi 15762, natomiast calkowita liczba kompletnych wartosci wynosi 232010. Zatem znaczna wiekszosc wartosci jest nam znana.
 
-```{r tabela podsumowująca liczby i proporcje wartosci NA, echo=FALSE}
+```{r tabela podsumowująca liczby i proporcje wartosci NA, echo=FALSE, include=TRUE}
 #tabela podsumowująca liczby i proporcje wartosci NA
 miss_var_summary(data) 
 
@@ -71,24 +71,24 @@ miss_var_summary(data)
 
 Powyzsza tabela ukazuje nie tylko wartosci liczbowe brakujacych danych w kazdej zmiennej, ale takze ich proporcje do lacznej sumy obserwacji. Poczawszy od wartosci posiadajac najmniej kompletnych danych.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 table(sapply(data, class))
 ```
 
 Najwiecej badanych zmiennych wystepuje w postaci liczb zmiennoprzecinkowych, jest ich 16, kolumn zmiennych w postaci tekstowej jest 10, a zmienna w postaci liczby calkowitej wystepuje tylko raz.
 
-```{r Wizualizacja brakow danych w calym zbiorze, echo=FALSE}
+```{r Wizualizacja brakow danych w calym zbiorze, echo=FALSE, include=TRUE}
 
 vis_miss(data) +
   ggtitle("Wizualizacja brakow danych w calym zbiorze")
 ```
 
-```{r Wizualizacja brakow danych w poszczegolnych kolumnacjh, echo=FALSE}
+```{r Wizualizacja brakow danych w poszczegolnych kolumnacjh, echo=FALSE, include=TRUE}
 gg_miss_var(data) +
   ggtitle("Wizualizacja brakow danych w poszczegolnych kolumnach")
 ```
 
-```{r Mapa brakow danych, echo=FALSE}
+```{r Mapa brakow danych, echo=FALSE, include=TRUE}
 
 missmap(data, main="Mapa brakow danych")
 
@@ -102,33 +102,15 @@ Możliwe metody radzenia sobie z brakami obejmują imputację wartości, co zost
 
 # WARTOŚCI ODSTAJĄCE
 
-```{r include=FALSE}
+```{r include=TRUE, echo=FALSE}
 # SPRAWDZENIE WARTOŚCI ODSTAJĄCYCH DLA WSZYSTKICH ZMIENNYCH 
 apartments_rent <- data
 
 boxplot(apartments_rent$buildYear, main = "buildYear")
 
-boxplot(apartments_rent$latitude, main = "latitude")
-
 boxplot(apartments_rent$squareMeters, main = "squareMeters")
 
-boxplot(apartments_rent$rooms, main = "rooms")
-
 boxplot(apartments_rent$floor, main = "floor")
-
-boxplot(apartments_rent$floorCount, main = "floorCount")
-
-boxplot(apartments_rent$centreDistance, main = "centreDistance")
-
-boxplot(apartments_rent$schoolDistance, main = "schoolDistance")
-
-boxplot(apartments_rent$clinicDistance, main = "clinicDistance")
-
-boxplot(apartments_rent$postOfficeDistance, main = "postOfficeDistance")
-
-boxplot(apartments_rent$kindergartenDistance, main = "kindergartenDistance")
-
-boxplot(apartments_rent$restaurantDistance, main = "restaurantDistance")
 
 boxplot(apartments_rent$collegeDistance, main = "collegeDistance")
 
@@ -139,7 +121,7 @@ boxplot(apartments_rent$price, main = "price")
 
 W analizowanym zbiorze danych wartości odstające występują w niemal każdej zmiennej. Jest to zjawisko naturalne w przypadku danych dotyczących nieruchomości, ponieważ rynek mieszkań charakteryzuje się dużą zmiennością wynikającą z różnic w lokalizacji, standardzie, metrażu oraz dostępności infrastruktury.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 # wartosci odstajace - NAJWIĘKSZE WARTOŚCI 
 
 
@@ -166,7 +148,7 @@ apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
 2.  W ramach przeprowadzonej walidacji danych dotyczących mieszkań do wynajęcia w Polsce (zbiór danych `apartments_rent_pl_2024_06`) wykonano szczegółowe sprawdzenie poprawności zakresów i wartości dla czterech kluczowych zmiennych: metrażu (`squareMeters`), liczby pokoi (`rooms`), piętra (`floor`) oraz ceny (`price`). Każda z tych zmiennych została poddana indywidualnej analizie w celu wykrycia potencjalnych błędów lub nieprawidłowości.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=FALSE}
 # Podpunkt 3: Walidacja zakresów i wartości
 
 # 3.1 Sprawdzenie, czy 'squareMeters' ma wartości dodatnie
@@ -200,7 +182,7 @@ list(
 
 3.  Sprawdzenie unikalnych wartości dla kolumn kategorycznych
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=FALSE}
 # Podpunkt 4: Sprawdzenie unikalnych wartości dla kolumn kategorycznych
 
 # 4.1 Sprawdzenie unikalnych wartości w kolumnie 'type'
@@ -239,7 +221,6 @@ Analiza ta pozwala na lepsze zrozumienie struktury danych oraz identyfikację ew
 ## IMPUTACJA BRAKÓW DANYCH
 
 ```{r include=FALSE}
-# Wczytaj bibliotekę i dane
 library(readxl)
 library(mice)
 library(VIM)
@@ -249,42 +230,34 @@ library(VIM)
 # Funkcja zamieniająca wszystkie puste wartości na NA
 apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
-# Wczytaj dane z pliku
-
 data <- apartments_rent_pl_2024_06
 
-# Sprawdź dane
 str(data)
 summary(data)
 ```
 
 ```{r include=FALSE}
-# Dodanie nowych kolumn do imputacji liczbowej
 num_cols <- c("squareMeters", "floor", "floorCount", "buildYear", "latitude", "longitude", 
               "pharmacyDistance", "clinicDistance", "postOfficeDistance", 
               "kindergartenDistance", "restaurantDistance", "collegeDistance")
 
-# Imputacja danych liczbowych przy użyciu MICE
 mice_result <- mice(data[num_cols], m = 5, method = 'pmm', maxit = 5, seed = 123)
 
 
-# Dodanie imputowanych kolumn liczbowych do danych
+
 data[num_cols] <- complete(mice_result)
 
-# Kolumny kategoryczne do imputacji Hotdeck
 cat_cols <- c("type", "ownership", "buildingMaterial", "condition", "hasParkingSpace", 
               "hasBalcony", "hasElevator", "hasSecurity", "hasStorageRoom")
 
-# Imputacja danych kategorycznych przy użyciu Hotdeck
+
 hotdeck_result <- hotdeck(data, variable = cat_cols)
 
-# Dodanie imputowanych kolumn kategorycznych do danych
+
 data[cat_cols] <- hotdeck_result[cat_cols]
 
-# Sprawdź wynikowe dane
 summary(data)
 
-# Funkcja do sprawdzania braków danych (NA) w każdej kolumnie
 check_na <- function(data) {
   na_summary <- data.frame(
     Column = colnames(data),
@@ -296,13 +269,12 @@ check_na <- function(data) {
 }
 
 
-# Wywołanie funkcji dla Twojego zestawu danych
 na_summary <- check_na(data)
 
-# Wyświetlenie wyników
+
 print(na_summary)
 
-# Zapisz dane do pliku wynikowego
+
 write.csv(data, "Imputed_Data_Combined.csv", row.names = FALSE)
 Imputed_Data_Combined <- read.csv("Imputed_Data_Combined.csv")
 ```
@@ -330,14 +302,13 @@ srednie_ceny <- Imputed_Data_Combined %>%
   summarise(srednie_ceny = mean(price))
 print(srednie_ceny)
 
-install.packages(c("maps", "mapdata", "ggplot2"))
 
 library(maps)
 library(mapdata)
 library(ggplot2)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 poland_map <- map_data("worldHires", region = "Poland")
 
 
@@ -369,7 +340,7 @@ Warszawa wyróżnia się najwyższymi średnimi cenami wynajmu w Polsce, co wyni
 
 a)  rozkład liczby pokoi
 
-```{r}
+```{r echo=FALSE, include=TRUE}
  ggplot(Imputed_Data_Combined, aes(x = rooms)) +
     geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
     labs(title = "Rozkład liczby pokoi",
@@ -381,7 +352,7 @@ Wykres przedstawia rozkład liczby pokoi w mieszkaniach dostępnych na wynajem. 
 
 b)  liczba mieszkań z windą i bez windy w różnych miastach
 
-```{r}
+```{r mieszkania_z_winda, echo=FALSE, include=TRUE}
 liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
     group_by(city, hasElevator) %>%
     summarise(count = n())
@@ -405,7 +376,7 @@ Wykres przedstawia liczbę mieszkań z windą i bez windy w różnych miastach P
 
 c)  Liczba mieszkań w poszczególnych miastach
 
-```{r}
+```{r echo=FALSE, include=TRUE}
  liczba_mieszkan <- Imputed_Data_Combined %>%
     group_by(city) %>%
     summarise(count = n())
@@ -434,7 +405,7 @@ Wykres przedstawia liczbę mieszkań dostępnych w poszczególnych miastach Pols
 
 a)  Cena wynajmu vs. Odległość od centrum
 
-```{r}
+```{r echo=FALSE, include=TRUE}
 ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -448,7 +419,7 @@ b)  Wpływ odległości do szkół na cenę mieszkań
 
 Wykres przedstawia zależność między ceną wynajmu a odległością od centrum w kilometrach. Widoczny jest ogólny trend spadkowy – im dalej od centrum, tym niższe ceny wynajmu, co sugeruje, że lokalizacja jest kluczowym czynnikiem wpływającym na koszt wynajmu mieszkania. Wyjątki od tej tendencji, czyli mieszkania o bardzo wysokich cenach w większej odległości od centrum, mogą wynikać z luksusowego standardu lub wyjątkowej lokalizacji. Niemniej jednak większość mieszkań koncentruje się w niższych przedziałach cenowych, co potwierdza, że dystans od centrum pozostaje istotnym determinantem cen.
 
-```{r}
+```{r echo=FALSE, include=TRUE}
 ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -468,13 +439,16 @@ Wykres przedstawia zależność między odległością od szkoły a ceną wynajm
 
 Poniższe dane zawierają analizę opisową dla badanej bazy danych
 
-```{r setup, include=FALSE}
+```{r setup2, include=FALSE}
 knitr::opts_chunk$set(include = FALSE)
 # pakiety:
 library(dplyr)
 library(ggplot2)
 library(summarytools)
 library(corrplot)
+library(tidyr)
+library(knitr)
+library(DT)
 ```
 
 1.  **Podstawowe statystyki opisowe dla kluczowych zmiennych**
@@ -496,17 +470,21 @@ stats <- Imputed_Data_Combined %>%
 
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 
-# Wyświetl wyniki
+stats_long <- stats %>% pivot_longer(cols = everything(),
+                                     names_to=c("Variable", "Statistic"),
+                                     names_sep = "_"
+                                     ) %>% pivot_wider(names_from=Variable, values_from=value)
 
+datatable(stats_long, options=list(pageLength=8,autoWidth=TRUE),caption="Podstawowe statystyki opisowe dla kluczowych zmiennych")
 
-view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
+# view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
 ```
 
 2.  **Szacowanie korelacji dla wybranych danych ilościowych** (cena, ilość pokoi, piętro, dystans od centrum, ilość pięter, rok budowy)
 
-```{r Szacowanie korelacji dla wybranych danych ilościowych, echo=FALSE}
+```{r Szacowanie korelacji dla wybranych danych ilościowych, echo=FALSE, include=FALSE}
 numeric_vars <- Imputed_Data_Combined %>%
   select("price","rooms","floor","centreDistance","floorCount","buildYear") %>%
   na.omit()
@@ -528,7 +506,7 @@ Ogólnie analiza wskazuje, że cena wynajmu jest najmocniej powiązana z wielko�
 
 W celu lepszej wizualizacji wniosków, poniżej przedstawiona została macierz korelacji:
 
-```{r Macierzy oszacowanych korelacji, echo=FALSE}
+```{r Macierzy oszacowanych korelacji, echo=FALSE, include=TRUE}
 library(corrplot)
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
@@ -538,19 +516,19 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
 
 W analizie wykorzystano model regresji liniowej, aby zbadać czynniki wpływające na cenę wynajmu mieszkań w 15 największych miastach. Do modelu włączono kluczowe zmienne, które potencjalnie mogą wpływać na cenę wynajmu, takie jak:
 
-- avg_price: Średnia cena nieruchomości w danym mieście, która odzwierciedla ogólną sytuację na rynku nieruchomości w danym regionie.
-- type: Typ budynku (dom, blok mieszkalny, kamienica), który może wpływać na atrakcyjność nieruchomości.
-- squareMeters: Metraż mieszkania, jako miara jego wielkości i przestrzeni użytkowej.
-- rooms: Liczba pokoi, która jest istotna dla rodzin lub osób poszukujących większych mieszkań.
-- buildYear: Rok budowy, który może wskazywać na stan techniczny nieruchomości oraz jej nowoczesność.
-- centreDistance: Odległość od centrum miasta, która jest kluczowa dla lokalizacji i dostępności do głównych atrakcji miejskich.
-- poiCount: Liczba punktów zainteresowania (szkoły, przychodnie, sklepy, restauracje) w promieniu 500 metrów, co wpływa na jakość życia w okolicy.
-- schoolDistance: Odległość do najbliższej szkoły, która może być istotna dla rodzin z dziećmi.
-- hasElevator: Obecność windy, która zwiększa komfort, szczególnie w wyższych budynkach.
+-   avg_price: Średnia cena nieruchomości w danym mieście, która odzwierciedla ogólną sytuację na rynku nieruchomości w danym regionie.
+-   type: Typ budynku (dom, blok mieszkalny, kamienica), który może wpływać na atrakcyjność nieruchomości.
+-   squareMeters: Metraż mieszkania, jako miara jego wielkości i przestrzeni użytkowej.
+-   rooms: Liczba pokoi, która jest istotna dla rodzin lub osób poszukujących większych mieszkań.
+-   buildYear: Rok budowy, który może wskazywać na stan techniczny nieruchomości oraz jej nowoczesność.
+-   centreDistance: Odległość od centrum miasta, która jest kluczowa dla lokalizacji i dostępności do głównych atrakcji miejskich.
+-   poiCount: Liczba punktów zainteresowania (szkoły, przychodnie, sklepy, restauracje) w promieniu 500 metrów, co wpływa na jakość życia w okolicy.
+-   schoolDistance: Odległość do najbliższej szkoły, która może być istotna dla rodzin z dziećmi.
+-   hasElevator: Obecność windy, która zwiększa komfort, szczególnie w wyższych budynkach.
 
 Te zmienne zostały wybrane, ponieważ są powszechnie uznawane za istotne czynniki wpływające na wartość nieruchomości na rynku wynajmu. Analiza ma na celu zrozumienie, jak każdy z tych czynników wpływa na cenę wynajmu oraz które z nich mają największe znaczenie dla potencjalnych najemców.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 city_avg_prices <- Imputed_Data_Combined %>%
   group_by(city) %>%
   summarise(avg_price = mean(price, na.rm = TRUE))
@@ -561,13 +539,13 @@ model_2 <- lm(formula = log(price) ~ avg_price + type + squareMeters + rooms + b
 summary(model_2)
 ```
 
-Wyniki modelu regresji liniowej pokazują, że zmienna zależna, logarytm ceny nieruchomości, jest wyjaśniana przez szereg istotnych statystycznie zmiennych niezależnych. Model ma bardzo dobre dopasowanie do danych, o czym świadczy wysoki współczynnik determinacji (R-squared = 0.8008), co oznacza, że około 80% zmienności logarytmu ceny nieruchomości jest wyjaśniane przez uwzględnione w modelu zmienne. Test F-statystyki (F-statistic = 3552, p < 2.2e-16) wskazuje, że model jako całość jest statystycznie istotny.
+Wyniki modelu regresji liniowej pokazują, że zmienna zależna, logarytm ceny nieruchomości, jest wyjaśniana przez szereg istotnych statystycznie zmiennych niezależnych. Model ma bardzo dobre dopasowanie do danych, o czym świadczy wysoki współczynnik determinacji (R-squared = 0.8008), co oznacza, że około 80% zmienności logarytmu ceny nieruchomości jest wyjaśniane przez uwzględnione w modelu zmienne. Test F-statystyki (F-statistic = 3552, p \< 2.2e-16) wskazuje, że model jako całość jest statystycznie istotny.
 
 Reszty modelu są symetrycznie rozłożone wokół zera (mediana bliska 0), ale występują niewielkie odstępstwa na krańcach (wartości skrajne od -1.5701 do 0.7970). Błąd standardowy reszt (Residual standard error = 0.2164) wskazuje, że średni błąd przewidywania logarytmu ceny wynosi 0.2164.
 
 Należy jednak pamiętać, że współczynniki w modelu są zlogarytmowane, co utrudnia ich bezpośrednią interpretację. Aby ułatwić interpretację, należy je przekształcić za pomocą funkcji wykładniczej, co pozwoli wyrazić je jako procentową zmianę ceny nieruchomości.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 interpretable_coefs <- exp(coef(model_2)) - 1
 
 interpretable_coefs
@@ -577,50 +555,49 @@ Wyniki przekształconych współczynników modelu regresji liniowej, uzyskane za
 
 Interpretacja przekształconych współczynników:
 
-1. Intercept: Wartość 43.3057 oznacza, że gdy wszystkie zmienne niezależne są równe zero, cena nieruchomości jest około 43.31% wyższa od wartości bazowej. Jest to wartość referencyjna, która nie ma bezpośredniej interpretacji w kontekście zmiennych, ale służy jako punkt wyjścia dla modelu.
+1.  Intercept: Wartość 43.3057 oznacza, że gdy wszystkie zmienne niezależne są równe zero, cena nieruchomości jest około 43.31% wyższa od wartości bazowej. Jest to wartość referencyjna, która nie ma bezpośredniej interpretacji w kontekście zmiennych, ale służy jako punkt wyjścia dla modelu.
 
-2. avg_price: Współczynnik 0.0002012 wskazuje, że wzrost średniej ceny w mieście o 1 jednostkę wiąże się z 0.02% wzrostem ceny nieruchomości. Choć efekt jest niewielki, jest istotny statystycznie.
+2.  avg_price: Współczynnik 0.0002012 wskazuje, że wzrost średniej ceny w mieście o 1 jednostkę wiąże się z 0.02% wzrostem ceny nieruchomości. Choć efekt jest niewielki, jest istotny statystycznie.
 
-3. typeblockOfFlats: Współczynnik -0.1012 oznacza, że nieruchomości typu "blok mieszkalny" są średnio 10.12% tańsze niż domy (kategoria referencyjna).
+3.  typeblockOfFlats: Współczynnik -0.1012 oznacza, że nieruchomości typu "blok mieszkalny" są średnio 10.12% tańsze niż domy (kategoria referencyjna).
 
-4. typetenement: Współczynnik -0.0471 sugeruje, że kamienice są średnio 4.71% tańsze niż domy.
+4.  typetenement: Współczynnik -0.0471 sugeruje, że kamienice są średnio 4.71% tańsze niż domy.
 
-5. squareMeters: Współczynnik 0.0118 wskazuje, że każdy dodatkowy metr kwadratowy powierzchni zwiększa cenę nieruchomości o 1.18%.
+5.  squareMeters: Współczynnik 0.0118 wskazuje, że każdy dodatkowy metr kwadratowy powierzchni zwiększa cenę nieruchomości o 1.18%.
 
-6. rooms: Współczynnik 0.0534 oznacza, że każda dodatkowa liczba pokoi wiąże się ze wzrostem ceny o 5.34%.
+6.  rooms: Współczynnik 0.0534 oznacza, że każda dodatkowa liczba pokoi wiąże się ze wzrostem ceny o 5.34%.
 
-7. buildYear: Współczynnik 0.0014 sugeruje, że każdy dodatkowy rok budowy (nowsze nieruchomości) wiąże się ze wzrostem ceny o 0.14%.
+7.  buildYear: Współczynnik 0.0014 sugeruje, że każdy dodatkowy rok budowy (nowsze nieruchomości) wiąże się ze wzrostem ceny o 0.14%.
 
-8. centreDistance: Współczynnik -0.0273 oznacza, że każda dodatkowa jednostka odległości od centrum miasta wiąże się ze spadkiem ceny o 2.73%.
+8.  centreDistance: Współczynnik -0.0273 oznacza, że każda dodatkowa jednostka odległości od centrum miasta wiąże się ze spadkiem ceny o 2.73%.
 
-9. poiCount: Współczynnik 0.00098 wskazuje, że każdy dodatkowy punkt zainteresowania (POI) w okolicy wiąże się ze wzrostem ceny o 0.098%.
+9.  poiCount: Współczynnik 0.00098 wskazuje, że każdy dodatkowy punkt zainteresowania (POI) w okolicy wiąże się ze wzrostem ceny o 0.098%.
 
 10. schoolDistance: Współczynnik 0.0568 sugeruje, że każda dodatkowa jednostka odległości do szkoły wiąże się ze wzrostem ceny o 5.68%. Ten wynik może wydawać się kontrintuicyjny i wymaga dalszej analizy, aby zrozumieć, dlaczego większa odległość do szkoły zwiększa cenę.
 
 11. hasElevatoryes: Współczynnik 0.0506 oznacza, że obecność windy w budynku wiąże się ze wzrostem ceny o 5.06%.
 
-
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 plot(model_2$residuals)
 ```
 
 Analiza reszt modelu regresyjnego dostarcza istotnych informacji na temat jego jakości i zgodności z założeniami. Wykres przedstawiający reszty względem indeksu obserwacji pokazuje, że większość wartości rozkłada się wokół zera, co sugeruje brak silnych trendów. Niemniej jednak, zauważalne są pewne wartości odstające, szczególnie w dolnej części wykresu. Brak wyraźnego wzorca w resztach sugeruje, że założenie homoscedastyczności może być spełnione, ale wymaga to dodatkowej weryfikacji testem statystycznym.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 library(car)
 vif(model_2)
 ```
 
 Analiza współczynników inflacji wariancji (VIF) wskazuje, że nie występuje istotny problem współliniowości pomiędzy zmiennymi niezależnymi. Wszystkie wartości VIF są poniżej progu krytycznego (5), co oznacza, że zmienne nie są nadmiernie skorelowane. Najwyższe wartości uzyskano dla zmiennych "squareMeters" (4.014) oraz "rooms" (3.836), co sugeruje pewną współliniowość, ale nie na poziomie wymagającym natychmiastowej interwencji.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 library(lmtest)             
 bptest(model_2)
 ```
 
-Wynik testu Breuscha-Pagana, który sprawdza homoscedastyczność reszt, wskazuje na istotny problem z niejednorodnością wariancji. Bardzo niska wartość p (< 2.2e-16) sugeruje, że wariancja reszt nie jest stała, co może negatywnie wpływać na jakość oszacowań parametrów modelu.
+Wynik testu Breuscha-Pagana, który sprawdza homoscedastyczność reszt, wskazuje na istotny problem z niejednorodnością wariancji. Bardzo niska wartość p (\< 2.2e-16) sugeruje, że wariancja reszt nie jest stała, co może negatywnie wpływać na jakość oszacowań parametrów modelu.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 qqnorm(residuals(model_2))
 qqline(residuals(model_2), col = "red")
 ```
@@ -628,7 +605,6 @@ qqline(residuals(model_2), col = "red")
 Wykres kwantyl-kwantyl (Q-Q plot) pozwala ocenić normalność rozkładu reszt. Idealnie dopasowane reszty powinny układać się wzdłuż czerwonej linii, co oznaczałoby zgodność z rozkładem normalnym. W tym przypadku widoczne są pewne odchylenia, szczególnie na krańcach wykresu, gdzie wartości odstające powodują rozproszenie punktów. Może to sugerować istnienie skośności w rozkładzie reszt, co może wpłynąć na interpretację wyników modelu oraz testów statystycznych. W przypadku tego modelu może to sugerować, że część danych dotyczyła wynajmu pokojów, co wpłynęło na występowanie bardzo niskich wartości. Analogicznie w zbiorze danych występują także bardzo drogie mieszkania na wynajem na cenę których może wpływać ich status „premium”.
 
 Podsumowując, model wykazuje pewne nieprawidłowości, takie jak heteroskedastyczność oraz lekkie odchylenie reszt od normalności, co może wpływać na jego trafność. Jednak nasz model ma na celu poglądowe wytłumaczenie ceny wynajmu mieszkań.
-
 
 # TEST NORMALNOŚCI ROZKŁADU
 
@@ -638,17 +614,15 @@ W celu dokonania testu normalności rozkładu dla zmiennych ilościowych, z bada
 
 **Hipoteza alternatywna (H₁)**: Dane nie posiadają rozkładu normalnego.
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 imputed_data_combined_numeric <- Imputed_Data_Combined[, sapply(Imputed_Data_Combined, is.numeric)]
 
-# Instalacja i załadowanie pakietu nortest (jeżeli nie jest zainstalowany)
 if (!require(nortest)) install.packages("nortest")
 library(nortest)
 
-# Test Andersona-Darlinga dla każdej zmiennej numerycznej
 ad_results <- apply(imputed_data_combined_numeric, 2, function(x) ad.test(x)$p.value)
 
-# Wyniki testu Andersona-Darlinga
+#Wyniki testu Andersona-Darlinga
 print(ad_results)
 ```
 
@@ -660,34 +634,33 @@ Dla wszystkich analizowanych zmiennych numerycznych otrzymaliśmy bardzo niskie 
 
 ## Test Kruskala-Wallisa dla zmiennej 'price' względem 'type'
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=FALSE}
 if (!requireNamespace("ggstatsplot", quietly = TRUE)) {
   install.packages("ggstatsplot")
 }
 library(ggstatsplot)
 
 
-# Test Kruskala-Wallisa dla zmiennej 'price' względem 'type'
+#Test Kruskala-Wallisa dla zmiennej 'price' względem 'type'
 kruskal_result <- kruskal.test(price ~ type, data = Imputed_Data_Combined)
 ```
 
 ## Wizualizacja testu Kruskala-Wallisa
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 # Wizualizacja wyników testu Kruskala-Wallisa
 p <- ggbetweenstats(
   data = Imputed_Data_Combined,
-  x = type,               # Zmienna grupująca
-  y = price,              # Zmienna numeryczna
-  type = "nonparametric", # Test nieparametryczny
+  x = type,               
+  y = price,              
+  type = "nonparametric", 
   title = "Porównanie cen (price) w różnych typach nieruchomości",
   xlab = "Typ nieruchomości",
   ylab = "Cena",
-  results.subtitle = TRUE, # Wyświetlenie wyników testu na wykresie
-  mean.plotting = TRUE     # Wyświetlenie średniej na wykresie
+  results.subtitle = TRUE, 
+  mean.plotting = TRUE     
 )
 
-# Wyświetlenie wykresu
 print(p)
 ```
 
@@ -702,25 +675,24 @@ Wyniki przeprowadzonego testu sugerują, że **typ nieruchomości ma istotny wp�
 W dalszej części zbadano czy istnieje, istotna statystycznie, zależność pomiędzy stanem technicznym nieruchomości (condition) a jej ceną (price). W tym celu wykorzystano test Chi-kwadrat, który pozwala ocenić, czy rozkład cen nieruchomości (podzielonych na kategorie: niskie, średnie, wysokie) jest zależny od stanu technicznego budynku. Analiza ta pozwoli określić, czy lepszy stan techniczny przekłada się na wyższe ceny, czy też nie ma istotnego wpływu. Dodatkowo wyniki zostaną zobrazowane na wykresie, co ułatwi interpretację zależności pomiędzy analizowanymi zmiennymi.
 
 ```{r echo=FALSE}
-# Podział zmiennej 'price' na 3 kategorie: niskie, średnie, wysokie
+
 Imputed_Data_Combined$price_category <- cut(
   Imputed_Data_Combined$price,
   breaks = quantile(Imputed_Data_Combined$price, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE),
   labels = c("Niskie", "Średnie", "Wysokie"),
   include.lowest = TRUE
 )
-# Tabela kontyngencji dla 'price_category' i 'condition'
+
 table_chi <- table(Imputed_Data_Combined$price_category, Imputed_Data_Combined$condition)
 print(table_chi)
 
-# Test Chi-kwadrat
 chi_result <- chisq.test(table_chi)
 ```
 
 ## Wizualizacja testu Chi-kwadrat
 
-```{r echo=FALSE}
-# Wizualizacja wyników testu Chi-kwadrat
+```{r echo=FALSE, include=TRUE}
+
 library(ggplot2)
 ggplot(Imputed_Data_Combined, aes(x = condition, fill = price_category)) +
   geom_bar(position = "fill") +
@@ -736,7 +708,6 @@ print(chi_result)
 
 Analiza wyników testu Chi-kwadrat pokazuje, że nie ma istotnej statystycznie zależności między stanem technicznym nieruchomości (low i premium) a jej kategorią cenową (Niskie, Średnie, Wysokie). Oznacza to, że stan techniczny nie wpływa znacząco na poziom cen – **nieruchomości w różnym stanie mogą znajdować się w podobnych przedziałach cenowych**.
 
-
 #Podsumowanie analizy
 
 W ramach projektu dokonano analizy zbioru danych, zawierającego informacje o wynajmie mieszkań w piętnastu największych miastach w Polsce (stan na czerwiec 2024). Celem badania było zidentyfikowanie kluczowych zależności między zmiennymi, a także określenie, które czynniki w największych stopniu determinują wysokość czynszu. Pierwszym etapem projektu było wstępne przetworzenie i eksploracja danych. Rozpoczęto od identyfikacji braków danych oraz wskazania wartości odstających. Kolejnym krokiem była walidacja danych, po której przystąpiono do zastosowania metod imputacji, aby zapewnić kompletność i spójność analizowanego zbioru. Zastosowanymi technikami imputacji były: algorytm MICE i metoda Hotdeck. Kolejny etap projektu obejmował wizualizację danych, mającą charakter czysto podglądowy. Następnie przystąpiono do analizy opisowej, aby lepiej zrozumieć badane dane oraz korelacje zachodzące między nimi. Przeprowadzono analizę korelacji między ceną najmu a innymi zmiennymi, w tym liczbą pokoi, rokiem budowy, odległością od centrum oraz bliskością placówek edukacyjnych.
@@ -746,5 +717,3 @@ W celu pogłębienia analizy zbudowano model regresji liniowej, w którym zmienn
 W ramach dalszych analiz sprawdzono normalność rozkładu danych oraz przeprowadzono testy statystyczne.
 
 Otrzymane wyniki mogą stanowić solidną podstawę do dalszych badań oraz wspierać proces podejmowania decyzji na rynku nieruchomości, zarówno od strony wynajmującego, jak i najemcy.
-
-
