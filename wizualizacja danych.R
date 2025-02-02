@@ -44,7 +44,7 @@ ggplot() +
 
 #1. ROZKŁADY
   
-# wykres 7 - rozkład cen mieszkań 
+# wykres 2 - rozkład cen mieszkań 
   
   ggplot(Imputed_Data_Combined, aes(x = price)) +
     geom_histogram(binwidth = 500, fill = "violetred3", color = "black", alpha = 0.7) +
@@ -71,7 +71,7 @@ ggplot() +
     theme_minimal()
   
   
-#wykres 9 - rozkład liczby pokoi
+#wykres 5 - rozkład liczby pokoi
   
   ggplot(Imputed_Data_Combined, aes(x = rooms)) +
     geom_histogram(binwidth = 1, fill = "violetred3", color = "black", alpha = 0.7) +
@@ -81,7 +81,7 @@ ggplot() +
   
 #WYKRESY KOŁOWE  
   
-# wykres 5 -  procentowy udział mieszkań w zależności od typów budynków 
+# wykres 6 -  procentowy udział mieszkań w zależności od typów budynków 
   
   procentowy_udzial <- Imputed_Data_Combined %>%
     group_by(type) %>%
@@ -104,7 +104,7 @@ ggplot() +
       legend.position = "top"
     )
   
-# wykres 12 - Podsumowanie liczby mieszkań z balkonem i bez balkonu
+# wykres 7 - Podsumowanie liczby mieszkań z balkonem i bez balkonu
   
   procentowy_udzial <- Imputed_Data_Combined %>%
     group_by(hasBalcony) %>%
@@ -126,7 +126,7 @@ ggplot() +
       legend.position = "top"
     )
   
-  # wykres 14 - Podsumowanie liczby mieszkań z parkingiem i bez
+  # wykres 8 - Podsumowanie liczby mieszkań z parkingiem i bez
 
   procentowy_udzial <- Imputed_Data_Combined %>%
     group_by(hasParkingSpace) %>%
@@ -148,7 +148,7 @@ ggplot() +
       legend.position = "top"
     )
   
-# wykres 15 - Podsumowanie liczby mieszkań z ochroną i bez
+# wykres 9 - Podsumowanie liczby mieszkań z ochroną i bez
 
   procentowy_udzial <- Imputed_Data_Combined %>%
     group_by(hasSecurity) %>%
@@ -175,7 +175,7 @@ ggplot() +
 
 #ZALEŻNOŚCI Z PODZIAŁEM NA MIASTA 
   
-#wykres 8 - średnie ceny wynajmu mieszkań w miastach Polski (wykres słupkowy)
+#wykres 10 - średnie ceny wynajmu mieszkań w miastach Polski (wykres słupkowy)
   
   ggplot(srednie_ceny, aes(x = reorder(city, srednie_ceny), y = srednie_ceny, fill = city)) +
     geom_bar(stat = "identity", fill = "mediumorchid4",  alpha = 0.7,) +
@@ -192,7 +192,7 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5)
     )
   
-  # wykres 27 - Liczba mieszkań w poszczególnych miastach (wykres słupkowy)
+  # wykres 11 - Liczba mieszkań w poszczególnych miastach (wykres słupkowy)
   liczba_mieszkan <- Imputed_Data_Combined %>%
     group_by(city) %>%
     summarise(count = n())
@@ -214,7 +214,7 @@ ggplot() +
     )
   
   
-# wykres 10 - liczba mieszkań z ochroną i bez ochrony w różnych miastach 
+# wykres 12 - liczba mieszkań z ochroną i bez ochrony w różnych miastach 
 
   liczba_mieszkan_z_ochrona <- Imputed_Data_Combined %>%
     group_by(city, hasSecurity) %>%
@@ -233,7 +233,7 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5)
     )
   
-# wykres 11 - liczba mieszkań z windą i bez windy w różnych miastach 
+# wykres 13 - liczba mieszkań z windą i bez windy w różnych miastach 
   
   liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
     group_by(city, hasElevator) %>%
@@ -252,10 +252,10 @@ ggplot() +
       plot.title = element_text(size = 14, hjust = 0.5)
     )
 
-#ZALEŻNOŚCI CENY OD ZMIENNYCH JAKOŚCIOWYCH
+#ZALEŻNOŚCI CENY OD RÓŻNYCH ZMIENNYCH
   
   
-# wykres 6 - Rozkład cen w zależności od typu mieszkania 
+# wykres 14 - Rozkład cen w zależności od typu mieszkania 
   
   ggplot(Imputed_Data_Combined, aes(x = type, y = price)) +
     geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
@@ -264,7 +264,7 @@ ggplot() +
     theme_minimal()
   
   
-# wykres 12 - Cena mieszkań w zależności od obecności balkonu
+# wykres 15 - Cena mieszkań w zależności od obecności balkonu
   
   ggplot(Imputed_Data_Combined, aes(x = hasBalcony, y = price)) +
     geom_jitter(width = 0.2, alpha = 0.6, color = "orchid4") +
@@ -277,7 +277,7 @@ ggplot() +
     )
   
   
-  # wykres 2 - Cena wynajmu w zależności od wielkości mieszkania
+# wykres 16 - Cena wynajmu w zależności od wielkości mieszkania
   
   ggplot(Imputed_Data_Combined, aes(x = squareMeters, y = price)) +
     geom_point(alpha = 0.7, size = 3, color = "maroon4") +  
@@ -286,9 +286,9 @@ ggplot() +
          x = "Wielkość mieszkania [m²]", y = "Cena wynajmu [PLN]") +
     theme_minimal()
 
-#ZALEŻNOŚCI CENY OD ZMIENNYCH ILOŚCIOWYCH
+
   
-# wykres 13 - cena mieszkania w zależności od roku wybudowania 
+# wykres 17 - cena mieszkania w zależności od roku wybudowania 
   
   ggplot(Imputed_Data_Combined, aes(x = buildYear, y = price)) +
     geom_point(alpha = 0.7, size = 3, color = "hotpink4") +  
@@ -299,7 +299,7 @@ ggplot() +
   
 
   
-  # wykres 25 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
+  # wykres 18 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
   ggplot(Imputed_Data_Combined, aes(x = as.numeric(rooms), y = price)) +  # Konwersja rooms na liczby
     geom_jitter(width = 0.2, alpha = 0.5, color = "maroon") +
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Dodana regresja
@@ -311,12 +311,12 @@ ggplot() +
 
   
   
-#ANALIZA DOSTĘPNOŚCI INFRASTRUKTÓRY
+#ANALIZA CENY W ZALEŻNOŚCI OD DOSTĘPNOŚCI INFRASTRUKTÓRY
   
 
 
   
-  # wykres 24 - Cena wynajmu vs. Odległość od centrum (scatter plot + regresja)
+  # wykres 19 - Cena wynajmu vs. Odległość od centrum (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -326,7 +326,7 @@ ggplot() +
     theme_minimal()
   
   
-  # wykres 17 - Wpływ odległości do szkół na cenę mieszkań (scatter plot + regresja)
+  # wykres 20 - Wpływ odległości do szkół na cenę mieszkań (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -336,7 +336,7 @@ ggplot() +
     theme_minimal()
 
   
-  # wykres 18 - Wpływ odległości do klinik na cenę mieszkań (scatter plot + regresja)
+  # wykres 21 - Wpływ odległości do klinik na cenę mieszkań (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = clinicDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -346,7 +346,7 @@ ggplot() +
     theme_minimal()
 
   
-  # wykres 19 - Wpływ odległości do uczelni na cenę mieszkań (scatter plot + regresja)
+  # wykres 22 - Wpływ odległości do uczelni na cenę mieszkań (scatter plot + regresja)
   ggplot(Imputed_Data_Combined, aes(x = collegeDistance, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -355,7 +355,7 @@ ggplot() +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 
-  # wykres 25 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
+  # wykres 23 - Cena wynajmu vs. Liczba pokoi (scatter plot - jitter plot)
   ggplot(Imputed_Data_Combined, aes(x = poiCount, y = price)) +
     geom_point(alpha = 0.5, color = "orchid4") +  # Punkty na wykresie
     geom_smooth(method = "lm", color = "black", se = TRUE, fill = "gray70") +  # Linia regresji z przedziałem ufności
@@ -368,7 +368,7 @@ ggplot() +
   #WYKRESY PUDEŁKOWE
   
   
-  # wykres 21 - Wpływ obecności windy na ceny mieszkań (boxplot)
+  # wykres 24 - Wpływ obecności windy na ceny mieszkań (boxplot)
   df_winda <- Imputed_Data_Combined %>%
     mutate(hasElevator = ifelse(hasElevator == "yes", "Z windą", "Bez windy"))
   
@@ -383,7 +383,7 @@ ggplot() +
   
   
   
-  # wykres 22 - Wpływ obecności ochrony na ceny mieszkań (boxplot)
+  # wykres 25 - Wpływ obecności ochrony na ceny mieszkań (boxplot)
   df_ochrona <- Imputed_Data_Combined %>%
     mutate(hasSecurity = ifelse(hasSecurity == "yes", "Z ochroną", "Bez ochrony"))
   
@@ -397,7 +397,7 @@ ggplot() +
     theme(legend.position = "none")
   
   
-  # wykres 23 - Wpływ obecności parkingu na ceny mieszkań (boxplot)
+  # wykres 26 - Wpływ obecności parkingu na ceny mieszkań (boxplot)
   df_parking <- Imputed_Data_Combined %>%
     mutate(hasParkingSpace = ifelse(hasParkingSpace == "yes", "Z parkingiem", "Bez parkingu"))
   
