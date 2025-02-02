@@ -606,7 +606,10 @@ Wykres kwantyl-kwantyl (Q-Q plot) pozwala ocenić normalność rozkładu reszt. 
 
 Podsumowując, model wykazuje pewne nieprawidłowości, takie jak heteroskedastyczność oraz lekkie odchylenie reszt od normalności, co może wpływać na jego trafność. Jednak nasz model ma na celu poglądowe wytłumaczenie ceny wynajmu mieszkań.
 
-# TEST NORMALNOŚCI ROZKŁADU
+
+# TESTY
+
+## TEST NORMALNOŚCI ROZKŁADU
 
 W celu dokonania testu normalności rozkładu dla zmiennych ilościowych, z badanych danych, zastosujemy test normalności rozkładu Andersona-Darlinga. Test ten został wybrany ze względu na jego wysoką czułość w wykrywaniu odchyleń od normalności, szczególnie w przypadku dużych prób.
 
@@ -708,7 +711,7 @@ print(chi_result)
 
 Analiza wyników testu Chi-kwadrat pokazuje, że nie ma istotnej statystycznie zależności między stanem technicznym nieruchomości (low i premium) a jej kategorią cenową (Niskie, Średnie, Wysokie). Oznacza to, że stan techniczny nie wpływa znacząco na poziom cen – **nieruchomości w różnym stanie mogą znajdować się w podobnych przedziałach cenowych**.
 
-#Podsumowanie analizy
+# Podsumowanie analizy
 
 W ramach projektu dokonano analizy zbioru danych, zawierającego informacje o wynajmie mieszkań w piętnastu największych miastach w Polsce (stan na czerwiec 2024). Celem badania było zidentyfikowanie kluczowych zależności między zmiennymi, a także określenie, które czynniki w największych stopniu determinują wysokość czynszu. Pierwszym etapem projektu było wstępne przetworzenie i eksploracja danych. Rozpoczęto od identyfikacji braków danych oraz wskazania wartości odstających. Kolejnym krokiem była walidacja danych, po której przystąpiono do zastosowania metod imputacji, aby zapewnić kompletność i spójność analizowanego zbioru. Zastosowanymi technikami imputacji były: algorytm MICE i metoda Hotdeck. Kolejny etap projektu obejmował wizualizację danych, mającą charakter czysto podglądowy. Następnie przystąpiono do analizy opisowej, aby lepiej zrozumieć badane dane oraz korelacje zachodzące między nimi. Przeprowadzono analizę korelacji między ceną najmu a innymi zmiennymi, w tym liczbą pokoi, rokiem budowy, odległością od centrum oraz bliskością placówek edukacyjnych.
 
