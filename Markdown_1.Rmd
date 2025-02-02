@@ -735,3 +735,14 @@ print(chi_result)
 ```
 
 Analiza wyników testu Chi-kwadrat pokazuje, że nie ma istotnej statystycznie zależności między stanem technicznym nieruchomości (low i premium) a jej kategorią cenową (Niskie, Średnie, Wysokie). Oznacza to, że stan techniczny nie wpływa znacząco na poziom cen – **nieruchomości w różnym stanie mogą znajdować się w podobnych przedziałach cenowych**.
+
+#Podsumowanie analizy
+
+W ramach projektu dokonano analizy zbioru danych, zawierającego informacje o wynajmie mieszkań w piętnastu największych miastach w Polsce (stan na czerwiec 2024). Celem badania było zidentyfikowanie kluczowych zależności między zmiennymi, a także określenie, które czynniki w największych stopniu determinują wysokość czynszu. Pierwszym etapem projektu było wstępne przetworzenie i eksploracja danych. Rozpoczęto od identyfikacji braków danych oraz wskazania wartości odstających. Kolejnym krokiem była walidacja danych, po której przystąpiono do zastosowania metod imputacji, aby zapewnić kompletność i spójność analizowanego zbioru. Zastosowanymi technikami imputacji były: algorytm MICE i metoda Hotdeck. Kolejny etap projektu obejmował wizualizację danych, mającą charakter czysto podglądowy. Następnie przystąpiono do analizy opisowej, aby lepiej zrozumieć badane dane oraz korelacje zachodzące między nimi. Przeprowadzono analizę korelacji między ceną najmu a innymi zmiennymi, w tym liczbą pokoi, rokiem budowy, odległością od centrum oraz bliskością placówek edukacyjnych.
+
+W celu pogłębienia analizy zbudowano model regresji liniowej, w którym zmienną zależną była cena najmu, a zmiennymi niezależnymi kluczowe czynniki, takie jak średnia cena w mieście, typ budynku, metraż, liczba pokoi, rok budowy, odległość od centrum, liczba punktów zainteresowania w okolicy, odległość do szkoły oraz obecność windy. Model wykazał bardzo dobre dopasowanie do danych, a wszystkie zmienne były statystycznie istotne. Miał on jednak problem z heteroskedastycznością oraz rozkładem reszt, dlatego jest tylko modelem poglądowym.
+
+W ramach dalszych analiz sprawdzono normalność rozkładu danych oraz przeprowadzono testy statystyczne.
+
+Otrzymane wyniki mogą stanowić solidną podstawę do dalszych badań oraz wspierać proces podejmowania decyzji na rynku nieruchomości, zarówno od strony wynajmującego, jak i najemcy.
+
