@@ -4,7 +4,24 @@ author: "Wanesa"
 date: "2025-01-22"
 output: html_document
 ---
-## ANALIZA BRAKÓW DANYCH
+
+# WSTĘP
+
+Rynek nieruchomości jest jednym z kluczowych obszarów, w których analityka danych znajduje szerokie zastosowanie. W ramach tego projektu analizujemy dane dotyczące wynajmu mieszkań w różnych miastach, aby zidentyfikować kluczowe czynniki wpływające na wysokość czynszu oraz przewidywać ceny wynajmu na podstawie dostępnych informacji.
+
+## Opis danych
+
+Zestaw danych składa się z 8849 obserwacji oraz 28 zmiennych, obejmujących zarówno cechy mieszkań, jak i ich lokalizację. Główne zmienne to:
+
+-   Metraż i układ mieszkania: squareMeters (powierzchnia w m²), rooms (liczba pokoi), floor (piętro), floorCount (liczba pięter w budynku).
+
+-   Lokalizacja: city (miasto), latitude i longitude (współrzędne geograficzne), centreDistance (odległość od centrum).
+
+-   Infrastruktura i otoczenie: schoolDistance, clinicDistance, restaurantDistance, collegeDistance (odległości do różnych punktów usługowych).
+
+-   Cechy budynku i mieszkania: buildYear (rok budowy), buildingMaterial (materiał budynku), condition (stan mieszkania), hasElevator, hasBalcony, hasParkingSpace, hasSecurity (cechy dodatkowe).
+
+-   Cena wynajmu: price (wysokość czynszu w PLN).
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, include = FALSE)
@@ -16,6 +33,8 @@ library(naniar)
 library(Amelia)
 library(mice)
 ```
+
+# ANALIZA BRAKÓW DANYCH
 
 ```{r miesieczna migawka ofert wynajmu, echo=FALSE}
 data <- read.csv("apartments_rent_pl_2024_06.csv")
@@ -68,21 +87,64 @@ gg_miss_var(data) +
 missmap(data, main="Mapa brakow danych")
 
 ```
+Przedstawione wizualizacje ukazują rozkłady brakujących wartości w analizowanym zbiorze danych. Z analizy wynika, że ogólny poziom braków danych wynosi około 6%, co oznacza, że większość obserwacji jest kompletna (94%). Braki są nierównomiernie rozłożone w poszczególnych zmiennych – najwięcej niepełnych danych obserwujemy w zmiennych "condition", "buildYear", "floor", "floorCount" oraz "restaurantDistance".
 
-```{r Klasyfikacja brakow danych, echo=FALSE}
-mcar_test(data)
-md.pattern(data)
-aggr_plot <- aggr(data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+Takie braki mogą wynikać z kilku czynników, np. niekompletnych wpisów w bazach danych, błędów w rejestracji informacji czy nieobowiązkowego charakteru niektórych pól. Warto zauważyć, że zmienne geograficzne, takie jak "longitude" i "city", są w pełni wypełnione, co sugeruje, że informacje lokalizacyjne są dobrze udokumentowane.
+
+Możliwe metody radzenia sobie z brakami obejmują imputację wartości, co zostanie opisane w dalszej części raportu.
+
+
+# WARTOŚCI ODSTAJĄCE
+
+```{r include=FALSE}
+# SPRAWDZENIE WARTOŚCI ODSTAJĄCYCH DLA WSZYSTKICH ZMIENNYCH 
+apartments_rent <- Imputed_Data_Combined
+
+boxplot(apartments_rent$buildYear, main = "buildYear")
+
+boxplot(apartments_rent$latitude, main = "latitude")
+
+boxplot(apartments_rent$squareMeters, main = "squareMeters")
+
+boxplot(apartments_rent$rooms, main = "rooms")
+
+boxplot(apartments_rent$floor, main = "floor")
+
+boxplot(apartments_rent$floorCount, main = "floorCount")
+
+boxplot(apartments_rent$centreDistance, main = "centreDistance")
+
+boxplot(apartments_rent$schoolDistance, main = "schoolDistance")
+
+boxplot(apartments_rent$clinicDistance, main = "clinicDistance")
+
+boxplot(apartments_rent$postOfficeDistance, main = "postOfficeDistance")
+
+boxplot(apartments_rent$kindergartenDistance, main = "kindergartenDistance")
+
+boxplot(apartments_rent$restaurantDistance, main = "restaurantDistance")
+
+boxplot(apartments_rent$collegeDistance, main = "collegeDistance")
+
+boxplot(apartments_rent$pharmacyDistance, main = "pharmacyDistance")
+
+boxplot(apartments_rent$price, main = "price")
 ```
 
-```{r Analiza wzorcow brakow}
+W analizowanym zbiorze danych wartości odstające występują w niemal każdej zmiennej. Jest to zjawisko naturalne w przypadku danych dotyczących nieruchomości, ponieważ rynek mieszkań charakteryzuje się dużą zmiennością wynikającą z różnic w lokalizacji, standardzie, metrażu oraz dostępności infrastruktury.
 
-md.pattern(data)  #nie rozumiem na razie tego ale to sie zrobi jeszcze
+```{r echo=FALSE}
+# wartosci odstajace - NAJWIĘKSZE WARTOŚCI 
 
-#Outliers w pozniejszym etapie tez o nich nie zapomniec
+
+boxplot(apartments_rent$price, main = "price")
+boxplot(apartments_rent$squareMeters, main = "squareMeters")
+boxplot(apartments_rent$floor, main = "floor")
 ```
 
-## Walidacja danych
+Najwięcej wartości odstających odnotowano w zmiennej „price” (cena najmu), co jest zgodne z intuicją – w bazie danych znajdują się zarówno mieszkania o standardowych cenach, jak i nieruchomości premium o wyjątkowo wysokich stawkach czynszu. Podobnie, zmienne „squareMeters” (powierzchnia mieszkania) oraz „floor” (piętro) wykazują dużą liczbę wartości odstających, co sugeruje, że w zbiorze danych znajdują się zarówno małe kawalerki, jak i bardzo duże apartamenty oraz mieszkania położone na skrajnych wysokościach budynków.
+
+# WALIDACJA DANYCH
 
 Przeprowadzono walidację danych dla zbioru `apartments_rent_pl_2024_06`. Zweryfikowano m.in. poprawność wartości liczbowych, spójność danych oraz unikalność wartości w kolumnach kategorycznych.
 
@@ -90,7 +152,7 @@ Przeprowadzono walidację danych dla zbioru `apartments_rent_pl_2024_06`. Zweryf
 
 Wszystkie puste wartości w zbiorze danych zamieniono na `NA`, co ułatwia dalszą analizę.
 
-```{r echo=FALSE}
+```{r include=FALSE}
 
 apartments_rent_pl_2024_06[apartments_rent_pl_2024_06 == ""] <- NA
 
@@ -118,7 +180,6 @@ list(
   squareMeters_check = squareMeters_check,
   rooms_check = rooms_check,
   floor_check = floor_check,
-  buildYear_check = buildYear_check,
   price_check = price_check
 )
 ```
@@ -295,7 +356,9 @@ ggplot() +
 
 Warszawa wyróżnia się najwyższymi średnimi cenami wynajmu w Polsce, co wynika z jej roli gospodarczego i edukacyjnego centrum kraju. Duże miasta, takie jak Gdańsk, Kraków czy Wrocław, również odnotowują wysokie koszty, głównie ze względu na turystykę i rozwój biznesowy. W mniejszych miastach, takich jak Radom czy Białystok, ceny są znacznie niższe, co może wynikać z mniejszego popytu i ograniczonej urbanizacji.
 
-2.Rozkłady
+2.  Rozkłady
+
+<!-- -->
 
 a)  rozkład liczby pokoi
 
@@ -306,9 +369,10 @@ a)  rozkład liczby pokoi
          x = "Liczba pokoi", y = "Liczba mieszkań") +
     theme_minimal()
 ```
+
 Wykres przedstawia rozkład liczby pokoi w mieszkaniach dostępnych na wynajem. Najwięcej ofert dotyczy mieszkań dwupokojowych, które dominują na rynku, co może wynikać z ich uniwersalności i popularności wśród wynajmujących. Mieszkania jednopokojowe i trzypokojowe stanowią mniejszą, choć znaczną część rynku, sugerując zróżnicowanie potrzeb najemców. Mieszkania cztero- i więcej pokojowe są rzadkością, co może oznaczać ograniczoną dostępność takich lokali lub niski popyt w tej kategorii.
 
-b)liczba mieszkań z windą i bez windy w różnych miastach
+b)  liczba mieszkań z windą i bez windy w różnych miastach
 
 ```{r}
 liczba_mieszkan_z_winda <- Imputed_Data_Combined %>%
@@ -357,13 +421,11 @@ c)  Liczba mieszkań w poszczególnych miastach
   
 ```
 
-3.  ANALIZA DOSTĘPNOŚCI INFRASTRUKTURY
+3.  Analiza dostępności infrastruktury
 
 Wykres przedstawia liczbę mieszkań dostępnych w poszczególnych miastach Polski. Warszawa zdecydowanie przoduje z liczbą 3393 mieszkań, co pokazuje jej dominującą pozycję na rynku nieruchomości. Kraków zajmuje drugie miejsce z liczbą 1764 mieszkań, a Wrocław trzecie z 879, co odzwierciedla koncentrację ofert w największych aglomeracjach. Mniejsze miasta, takie jak Radom czy Białystok, mają znacznie mniejszą liczbę mieszkań, co może wynikać z ich wielkości, mniejszego zapotrzebowania na wynajem lub mniej rozwiniętego rynku nieruchomości.
 
-
-
-a)Cena wynajmu vs. Odległość od centrum
+a)  Cena wynajmu vs. Odległość od centrum
 
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
@@ -374,10 +436,10 @@ ggplot(Imputed_Data_Combined, aes(x = centreDistance, y = price)) +
          y = "Cena wynajmu [PLN]") +
     theme_minimal()
 ```
-b)Wpływ odległości do szkół na cenę mieszkań
-=======
-Wykres przedstawia zależność między ceną wynajmu a odległością od centrum w kilometrach. Widoczny jest ogólny trend spadkowy – im dalej od centrum, tym niższe ceny wynajmu, co sugeruje, że lokalizacja jest kluczowym czynnikiem wpływającym na koszt wynajmu mieszkania. Wyjątki od tej tendencji, czyli mieszkania o bardzo wysokich cenach w większej odległości od centrum, mogą wynikać z luksusowego standardu lub wyjątkowej lokalizacji. Niemniej jednak większość mieszkań koncentruje się w niższych przedziałach cenowych, co potwierdza, że dystans od centrum pozostaje istotnym determinantem cen.
 
+b)  Wpływ odległości do szkół na cenę mieszkań
+
+Wykres przedstawia zależność między ceną wynajmu a odległością od centrum w kilometrach. Widoczny jest ogólny trend spadkowy – im dalej od centrum, tym niższe ceny wynajmu, co sugeruje, że lokalizacja jest kluczowym czynnikiem wpływającym na koszt wynajmu mieszkania. Wyjątki od tej tendencji, czyli mieszkania o bardzo wysokich cenach w większej odległości od centrum, mogą wynikać z luksusowego standardu lub wyjątkowej lokalizacji. Niemniej jednak większość mieszkań koncentruje się w niższych przedziałach cenowych, co potwierdza, że dystans od centrum pozostaje istotnym determinantem cen.
 
 ```{r}
 ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
@@ -389,16 +451,13 @@ ggplot(Imputed_Data_Combined, aes(x = schoolDistance, y = price)) +
     theme_minimal()
 ```
 
-
 ------------------------------------------------------------------------
 
-## ANALIZA OPISOWA
-=======
+# ANALIZA OPISOWA
+
 Wykres przedstawia zależność między odległością od szkoły a ceną wynajmu mieszkania. Zauważalny jest delikatny trend spadkowy – im większa odległość od szkoły, tym niższe ceny wynajmu, co sugeruje, że bliskość do placówek edukacyjnych może być atutem podnoszącym koszt wynajmu. Najwyższe ceny mieszkań skupiają się w bliskiej odległości od szkół, co może wynikać z preferencji rodzin z dziećmi lub studentów szukających lokum w pobliżu. Jednak dla odległości powyżej 1-2 km różnice cenowe stają się mniej wyraźne, co wskazuje, że wpływ bliskości szkoły jest najsilniejszy w bezpośrednim sąsiedztwie.
 
 ------------------------------------------------------------------------
-
-
 
 Poniższe dane zawierają analizę opisową dla badanej bazy danych
 
@@ -411,7 +470,7 @@ library(summarytools)
 library(corrplot)
 ```
 
-Tabela 1. Podstawowe statystyki opisowe dla kluczowych zmiennych
+1.  Podstawowe statystyki opisowe dla kluczowych zmiennych
 
 ```{r Podstawowe statystyki opisowe dla kluczowych zmiennych, include=FALSE}
 key_vars <- c("price", "squareMeters", "rooms", "centreDistance", 
@@ -433,7 +492,7 @@ stats <- Imputed_Data_Combined %>%
 ```{r echo=FALSE}
 
 # Wyświetl wyniki
-print(stats)
+
 
 view(dfSummary(Imputed_Data_Combined %>% select(all_of(key_vars))))
 ```
@@ -451,16 +510,19 @@ cor_matrix
 
 Kluczowe wnioski:
 
-1. Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza to, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
-2. Wyraźna dodatnia korelacja między liczbą pięter w budynku a piętrem mieszkania (0.67): Wskazuje na logiczną zależność – wyższe mieszkania częściej znajdują się w budynkach o większej liczbie pięter.
-3. Brak istotnej korelacji między odległością od centrum a ceną (-0.01): Oznacza, że w analizowanym zestawie danych lokalizacja względem centrum nie wpływa znacząco na cenę wynajmu.
-4. Słaba lub ujemna korelacja roku budowy z innymi zmiennymi: Budynki starsze są częściej związane z niższą liczbą pięter oraz ceną, jednak wartości korelacji (-0.02 do 0.15) są zbyt niskie, aby mówić o wyraźnym trendzie.
+-   Silna korelacja między liczbą pokoi a ceną wynajmu (0.64): Oznacza to, że większa liczba pokoi jest istotnym czynnikiem podnoszącym cenę mieszkania.
+-   Wyraźna dodatnia korelacja między liczbą pięter w budynku a piętrem mieszkania (0.67): Wskazuje na logiczną zależność – wyższe mieszkania częściej znajdują się w budynkach o większej liczbie pięter.
+-   Brak istotnej korelacji między odległością od centrum a ceną (-0.01): Oznacza, że w analizowanym zestawie danych lokalizacja względem centrum nie wpływa znacząco na cenę wynajmu.
+-   Słaba lub ujemna korelacja roku budowy z innymi zmiennymi: Budynki starsze są częściej związane z niższą liczbą pięter oraz ceną, jednak wartości korelacji (-0.02 do 0.15) są zbyt niskie, aby mówić o wyraźnym trendzie.
 
 Ogólnie analiza wskazuje, że cena wynajmu jest najmocniej powiązana z wielkością mieszkania (liczbą pokoi), natomiast lokalizacja i inne czynniki mają słabszy wpływ.
 
 3.  Macierzy oszacowanych korelacji
 
+W celu lepszej wizualizacji wniosków, poniżej przedstawiona została macierz korelacji:
+
 ```{r Macierzy oszacowanych korelacji, echo=FALSE}
+library(corrplot)
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
