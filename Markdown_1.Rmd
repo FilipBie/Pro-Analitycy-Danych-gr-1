@@ -639,3 +639,14 @@ print(chi_result)
 ```
 
 Analiza wyników testu Chi-kwadrat pokazuje, że nie ma istotnej statystycznie zależności między stanem technicznym nieruchomości (low i premium) a jej kategorią cenową (Niskie, Średnie, Wysokie). Oznacza to, że stan techniczny nie wpływa znacząco na poziom cen – **nieruchomości w różnym stanie mogą znajdować się w podobnych przedziałach cenowych**.
+
+## **Podsumowanie analizy**
+W ramach projektu dokonano analizy zbioru danych, zawierającego informacje o wynajmie mieszkań w piętnastu największych miastach w Polsce. Celem badania było zidentyfikowanie kluczowych zależności między zmiennymi, a także określenie, które czynniki w największym stopniu determinują wysokość czynszu. 
+Pierwszym etapem projektu było wstępne przetworzenie i eksploracja danych. Rozpoczęto od identyfikacji braków danych oraz wskazania wartości odstających. Kolejnym krokiem była walidacja danych, po której przystąpiono do zastosowania metod imputacji, aby zapewnić kompletność i spójność analizowanego zbioru. Zastosowanymi technikami imputacji były: algorytm MICE i metoda Hotdeck. 
+Kolejny etap projektu obejmował wizualizację danych, mającą charakter czysto podglądowy. Najwięcej dostępnych było mieszkań dwupokojowych na wynajem. Z kolei miejscowością z największą liczbą dostępnych mieszkań ogółem była Warszawa.  
+Następnie przystąpiono do analizy opisowej, aby lepiej zrozumieć badane dane oraz korelacje zachodzące między nimi. Przeprowadzono analizę korelacji między ceną najmu a innymi zmiennymi, w tym liczbą pokoi, rokiem budowy, odległością od centrum oraz bliskością placówek edukacyjnych. Wyniki wykazały, że na wysokość czynszu w największym stopniu wpływa liczba pokoi, natomiast lokalizacja względem centrum miasta nie ma istotnego znaczenia, co może wydawać się zaskakujące. 
+
+W ramach dalszych analiz sprawdzono normalność rozkładu danych oraz przeprowadzono testy statystyczne. Wyniki testu Kruskala-Wallisa wykazały istotne różnice w poziomie cen w zależności od typu nieruchomości – najwyższe czynsze odnotowano w przypadku budynków apartamentowych, natomiast najniższe w blokach mieszkalnych. Z kolei test Chi-kwadrat pozwolił na ocenę wpływu stanu technicznego budynku na poziom cen. Analiza wykazała, że stan techniczny nieruchomości nie jest istotnym czynnikiem w kształtowaniu wysokości czynszu, co sugeruje, że inne zmienne mają większy wpływ na określanie cen na rynku najmu.
+Podsumowując, przeprowadzona analiza dostarczyła wartościowych informacji na temat czynników wpływających na ceny najmu. Otrzymane wyniki mogą stanowić solidną podstawę do dalszych badań oraz wspierać proces podejmowania decyzji na rynku nieruchomości, zarówno od strony wynajmującego, jak i najemcy. 
+
+
