@@ -5,28 +5,28 @@ model <-lm(formula = log(price)~  squareMeters + floor + buildYear, data = dane_
 
 summary(model)
 
-#wykres reszt modelu
-plot(model$residuals)
 
+#model 2
 
-#testowanie współlinowości 
+library(dplyr)
+
+city_avg_prices <- Imputed_Data_Combined %>%
+  group_by(city) %>%
+  summarise(avg_price = mean(price, na.rm = TRUE))
+
+Imputed_Data_Combined$avg_price <- city_avg_prices$avg_price[match(Imputed_Data_Combined$city, city_avg_prices$city)]
+
+model_2 <- lm(formula = log(price) ~ avg_price + type + squareMeters + rooms + buildYear + centreDistance + poiCount + schoolDistance + hasElevator, data = Imputed_Data_Combined)
+summary(model_2)
+
+plot(model_2$residuals)
+
 library(car)
-vif(model)
+vif(model_2)
 
-sample_residuals <- sample(model$residuals, 5000)
-shapiro.test(sample_residuals)
+bptest(model_2)
 
-library(sandwich)
-library(lmtest)
-coeftest(model, vcov = vcovHC(model, type = "HC1"))
-
-qqnorm(model$residuals)
-qqline(model$residuals, col = "red")
-
-library(lmtest)
-bptest(model)
-
-
-
+qqnorm(residuals(model_2))
+qqline(residuals(model_2), col = "red")
 
 
